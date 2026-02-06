@@ -1,0 +1,4 @@
+.kiro/*
+cdk.out/*
+.env
+node_modules/*

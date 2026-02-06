@@ -1,0 +1,1478 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "CloudFormationOperations",
+      "Effect": "Allow",
+      "Action": [
+        "cloudformation:CreateStack",
+        "cloudformation:UpdateStack",
+        "cloudformation:DeleteStack",
+        "cloudformation:DescribeStacks",
+        "cloudformation:DescribeStackEvents",
+        "cloudformation:DescribeStackResources",
+        "cloudformation:GetTemplate",
+        "cloudformation:ValidateTemplate",
+        "cloudformation:ListStacks",
+        "cloudformation:ListStackResources",
+        "cloudformation:CreateChangeSet",
+        "cloudformation:DescribeChangeSet",
+        "cloudformation:ExecuteChangeSet",
+        "cloudformation:DeleteChangeSet",
+        "cloudformation:SetStackPolicy"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "S3OperationsForCDKAssets",
+      "Effect": "Allow",
+      "Action": [
+        "s3:CreateBucket",
+        "s3:DeleteBucket",
+        "s3:PutBucketPolicy",
+        "s3:GetBucketPolicy",
+        "s3:DeleteBucketPolicy",
+        "s3:PutBucketVersioning",
+        "s3:GetBucketVersioning",
+        "s3:PutBucketEncryption",
+        "s3:GetBucketEncryption",
+        "s3:PutBucketPublicAccessBlock",
+        "s3:GetBucketPublicAccessBlock",
+        "s3:PutBucketTagging",
+        "s3:GetBucketTagging",
+        "s3:PutBucketAcl",
+        "s3:GetBucketAcl",
+        "s3:PutBucketCors",
+        "s3:GetBucketCors",
+        "s3:PutBucketLifecycleConfiguration",
+        "s3:GetBucketLifecycleConfiguration",
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:DeleteObject",
+        "s3:ListBucket",
+        "s3:GetBucketLocation",
+        "s3:PutBucketNotification",
+        "s3:GetBucketNotification"
+      ],
+      "Resource": [
+        "arn:aws:s3:::cdk-*",
+        "arn:aws:s3:::cdk-*/*"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "IAMRoleOperationsWithPrefixRestriction",
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateRole",
+        "iam:DeleteRole",
+        "iam:GetRole",
+        "iam:UpdateRole",
+        "iam:UpdateRoleDescription",
+        "iam:UpdateAssumeRolePolicy",
+        "iam:PutRolePolicy",
+        "iam:DeleteRolePolicy",
+        "iam:GetRolePolicy",
+        "iam:ListRolePolicies",
+        "iam:AttachRolePolicy",
+        "iam:DetachRolePolicy",
+        "iam:ListAttachedRolePolicies",
+        "iam:ListInstanceProfilesForRole",
+        "iam:CreateInstanceProfile",
+        "iam:DeleteInstanceProfile",
+        "iam:AddRoleToInstanceProfile",
+        "iam:RemoveRoleFromInstanceProfile",
+        "iam:GetInstanceProfile",
+        "iam:PassRole"
+      ],
+      "Resource": [
+        "arn:aws:iam::*:role/OpenClaw*",
+        "arn:aws:iam::*:role/openclaw*",
+        "arn:aws:iam::*:role/cdk-*",
+        "arn:aws:iam::*:instance-profile/OpenClaw*",
+        "arn:aws:iam::*:instance-profile/openclaw*",
+        "arn:aws:iam::*:instance-profile/cdk-*"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "IAMPolicyOperationsWithPrefixRestriction",
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreatePolicy",
+        "iam:DeletePolicy",
+        "iam:GetPolicy",
+        "iam:CreatePolicyVersion",
+        "iam:DeletePolicyVersion",
+        "iam:GetPolicyVersion",
+        "iam:ListPolicyVersions",
+        "iam:SetDefaultPolicyVersion",
+        "iam:ListEntitiesForPolicy"
+      ],
+      "Resource": [
+        "arn:aws:iam::*:policy/OpenClaw*",
+        "arn:aws:iam::*:policy/openclaw*"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "IAMReadOnlyOperations",
+      "Effect": "Allow",
+      "Action": [
+        "iam:GetUser",
+        "iam:GetGroup",
+        "iam:ListGroups",
+        "iam:ListUsers",
+        "iam:ListRoles",
+        "iam:ListPolicies",
+        "iam:SimulatePrincipalPolicy",
+        "iam:GetRole",
+        "iam:GetPolicy",
+        "iam:GetOpenIDConnectProvider",
+        "iam:ListOpenIDConnectProviders"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ECSOperations",
+      "Effect": "Allow",
+      "Action": [
+        "ecs:CreateCluster",
+        "ecs:DeleteCluster",
+        "ecs:DescribeClusters",
+        "ecs:ListClusters",
+        "ecs:UpdateCluster",
+        "ecs:PutClusterCapacityProviders",
+        "ecs:CreateService",
+        "ecs:DeleteService",
+        "ecs:DescribeServices",
+        "ecs:UpdateService",
+        "ecs:ListServices",
+        "ecs:RegisterTaskDefinition",
+        "ecs:DeregisterTaskDefinition",
+        "ecs:DescribeTaskDefinition",
+        "ecs:ListTaskDefinitions",
+        "ecs:RunTask",
+        "ecs:StopTask",
+        "ecs:DescribeTasks",
+        "ecs:ListTasks",
+        "ecs:TagResource",
+        "ecs:UntagResource",
+        "ecs:ListTagsForResource",
+        "ecs:CreateCapacityProvider",
+        "ecs:DeleteCapacityProvider",
+        "ecs:DescribeCapacityProviders",
+        "ecs:PutAccountSetting",
+        "ecs:PutAccountSettingDefault"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "ECROperations",
+      "Effect": "Allow",
+      "Action": [
+        "ecr:CreateRepository",
+        "ecr:DeleteRepository",
+        "ecr:DescribeRepositories",
+        "ecr:ListRepositories",
+        "ecr:PutImage",
+        "ecr:BatchGetImage",
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:UploadLayerPart",
+        "ecr:CompleteLayerUpload",
+        "ecr:InitiateLayerUpload",
+        "ecr:DeleteRepositoryPolicy",
+        "ecr:GetRepositoryPolicy",
+        "ecr:SetRepositoryPolicy",
+        "ecr:PutImageTagMutability",
+        "ecr:GetAuthorizationToken",
+        "ecr:DescribeImages",
+        "ecr:BatchDeleteImage",
+        "ecr:PutLifecyclePolicy",
+        "ecr:GetLifecyclePolicy",
+        "ecr:DeleteLifecyclePolicy",
+        "ecr:TagResource",
+        "ecr:UntagResource",
+        "ecr:ListTagsForResource",
+        "ecr:PutImageScanningConfiguration"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "VPCOperations",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:CreateVpc",
+        "ec2:DeleteVpc",
+        "ec2:DescribeVpcs",
+        "ec2:ModifyVpcAttribute",
+        "ec2:CreateSubnet",
+        "ec2:DeleteSubnet",
+        "ec2:DescribeSubnets",
+        "ec2:ModifySubnetAttribute",
+        "ec2:CreateInternetGateway",
+        "ec2:DeleteInternetGateway",
+        "ec2:AttachInternetGateway",
+        "ec2:DetachInternetGateway",
+        "ec2:DescribeInternetGateways",
+        "ec2:CreateNatGateway",
+        "ec2:DeleteNatGateway",
+        "ec2:DescribeNatGateways",
+        "ec2:CreateRouteTable",
+        "ec2:DeleteRouteTable",
+        "ec2:DescribeRouteTables",
+        "ec2:CreateRoute",
+        "ec2:DeleteRoute",
+        "ec2:AssociateRouteTable",
+        "ec2:DisassociateRouteTable",
+        "ec2:CreateSecurityGroup",
+        "ec2:DeleteSecurityGroup",
+        "ec2:DescribeSecurityGroups",
+        "ec2:AuthorizeSecurityGroupIngress",
+        "ec2:AuthorizeSecurityGroupEgress",
+        "ec2:RevokeSecurityGroupIngress",
+        "ec2:RevokeSecurityGroupEgress",
+        "ec2:UpdateSecurityGroupRuleDescriptionsIngress",
+        "ec2:UpdateSecurityGroupRuleDescriptionsEgress",
+        "ec2:CreateTags",
+        "ec2:DeleteTags",
+        "ec2:DescribeTags",
+        "ec2:DescribeAvailabilityZones",
+        "ec2:DescribeAccountAttributes",
+        "ec2:DescribeNetworkAcls",
+        "ec2:DescribeVpcAttribute",
+        "ec2:DescribeVpcEndpoints",
+        "ec2:DescribeVpcEndpointServices",
+        "ec2:CreateVpcEndpoint",
+        "ec2:DeleteVpcEndpoints",
+        "ec2:ModifyVpcEndpoint",
+        "ec2:DescribeAddresses",
+        "ec2:AllocateAddress",
+        "ec2:ReleaseAddress",
+        "ec2:AssociateAddress",
+        "ec2:DisassociateAddress",
+        "ec2:CreateEgressOnlyInternetGateway",
+        "ec2:DeleteEgressOnlyInternetGateway",
+        "ec2:DescribeEgressOnlyInternetGateways"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "SecretsManagerOperations",
+      "Effect": "Allow",
+      "Action": [
+        "secretsmanager:CreateSecret",
+        "secretsmanager:DeleteSecret",
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue",
+        "secretsmanager:PutSecretValue",
+        "secretsmanager:UpdateSecret",
+        "secretsmanager:UpdateSecretVersionStage",
+        "secretsmanager:RestoreSecret",
+        "secretsmanager:RotateSecret",
+        "secretsmanager:CancelRotateSecret",
+        "secretsmanager:TagResource",
+        "secretsmanager:UntagResource",
+        "secretsmanager:ListSecrets",
+        "secretsmanager:ListSecretVersionIds",
+        "secretsmanager:GetResourcePolicy",
+        "secretsmanager:PutResourcePolicy",
+        "secretsmanager:DeleteResourcePolicy",
+        "secretsmanager:ValidateResourcePolicy"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "CloudWatchLogsOperations",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:DeleteLogGroup",
+        "logs:DescribeLogGroups",
+        "logs:ListTagsLogGroup",
+        "logs:TagLogGroup",
+        "logs:UntagLogGroup",
+        "logs:PutRetentionPolicy",
+        "logs:DeleteRetentionPolicy",
+        "logs:CreateLogStream",
+        "logs:DeleteLogStream",
+        "logs:DescribeLogStreams",
+        "logs:PutLogEvents",
+        "logs:GetLogEvents",
+        "logs:FilterLogEvents",
+        "logs:PutSubscriptionFilter",
+        "logs:DeleteSubscriptionFilter",
+        "logs:DescribeSubscriptionFilters",
+        "logs:PutResourcePolicy",
+        "logs:DescribeResourcePolicies",
+        "logs:DeleteResourcePolicy",
+        "logs:AssociateKmsKey",
+        "logs:DisassociateKmsKey"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "ElasticLoadBalancingOperations",
+      "Effect": "Allow",
+      "Action": [
+        "elasticloadbalancing:CreateLoadBalancer",
+        "elasticloadbalancing:DeleteLoadBalancer",
+        "elasticloadbalancing:DescribeLoadBalancers",
+        "elasticloadbalancing:DescribeLoadBalancerAttributes",
+        "elasticloadbalancing:ModifyLoadBalancerAttributes",
+        "elasticloadbalancing:CreateTargetGroup",
+        "elasticloadbalancing:DeleteTargetGroup",
+        "elasticloadbalancing:DescribeTargetGroups",
+        "elasticloadbalancing:DescribeTargetGroupAttributes",
+        "elasticloadbalancing:ModifyTargetGroup",
+        "elasticloadbalancing:ModifyTargetGroupAttributes",
+        "elasticloadbalancing:RegisterTargets",
+        "elasticloadbalancing:DeregisterTargets",
+        "elasticloadbalancing:DescribeTargetHealth",
+        "elasticloadbalancing:CreateListener",
+        "elasticloadbalancing:DeleteListener",
+        "elasticloadbalancing:DescribeListeners",
+        "elasticloadbalancing:ModifyListener",
+        "elasticloadbalancing:AddTags",
+        "elasticloadbalancing:RemoveTags",
+        "elasticloadbalancing:DescribeTags",
+        "elasticloadbalancing:CreateRule",
+        "elasticloadbalancing:DeleteRule",
+        "elasticloadbalancing:DescribeRules",
+        "elasticloadbalancing:ModifyRule",
+        "elasticloadbalancing:SetSecurityGroups",
+        "elasticloadbalancing:SetSubnets",
+        "elasticloadbalancing:SetIpAddressType",
+        "elasticloadbalancing:CreateListenerRule",
+        "elasticloadbalancing:DeleteListenerRule",
+        "elasticloadbalancing:SetWebAcl",
+        "elasticloadbalancing:DescribeSSLPolicies",
+        "elasticloadbalancing:SetRulePriorities"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "EFSOperations",
+      "Effect": "Allow",
+      "Action": [
+        "elasticfilesystem:CreateFileSystem",
+        "elasticfilesystem:DeleteFileSystem",
+        "elasticfilesystem:DescribeFileSystems",
+        "elasticfilesystem:UpdateFileSystem",
+        "elasticfilesystem:CreateMountTarget",
+        "elasticfilesystem:DeleteMountTarget",
+        "elasticfilesystem:DescribeMountTargets",
+        "elasticfilesystem:DescribeMountTargetSecurityGroups",
+        "elasticfilesystem:ModifyMountTargetSecurityGroups",
+        "elasticfilesystem:CreateAccessPoint",
+        "elasticfilesystem:DeleteAccessPoint",
+        "elasticfilesystem:DescribeAccessPoints",
+        "elasticfilesystem:PutFileSystemPolicy",
+        "elasticfilesystem:GetFileSystemPolicy",
+        "elasticfilesystem:DeleteFileSystemPolicy",
+        "elasticfilesystem:TagResource",
+        "elasticfilesystem:UntagResource",
+        "elasticfilesystem:ListTagsForResource",
+        "elasticfilesystem:PutLifecycleConfiguration",
+        "elasticfilesystem:DescribeLifecycleConfiguration",
+        "elasticfilesystem:CreateReplicationConfiguration",
+        "elasticfilesystem:DeleteReplicationConfiguration",
+        "elasticfilesystem:DescribeReplicationConfigurations",
+        "elasticfilesystem:Restore",
+        "elasticfilesystem:PutBackupPolicy",
+        "elasticfilesystem:DescribeBackupPolicy"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "ResourceTaggingOperations",
+      "Effect": "Allow",
+      "Action": [
+        "tag:GetResources",
+        "tag:GetTagKeys",
+        "tag:GetTagValues",
+        "tag:TagResources",
+        "tag:UntagResources"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "SSMOperationsForCDK",
+      "Effect": "Allow",
+      "Action": [
+        "ssm:GetParameter",
+        "ssm:GetParameters",
+        "ssm:GetParametersByPath",
+        "ssm:PutParameter",
+        "ssm:DeleteParameter",
+        "ssm:DeleteParameters",
+        "ssm:DescribeParameters",
+        "ssm:AddTagsToResource",
+        "ssm:RemoveTagsFromResource",
+        "ssm:ListTagsForResource"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "KMSOperationsForEncryption",
+      "Effect": "Allow",
+      "Action": [
+        "kms:Encrypt",
+        "kms:Decrypt",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*",
+        "kms:DescribeKey",
+        "kms:CreateGrant",
+        "kms:ListGrants",
+        "kms:RevokeGrant",
+        "kms:RetireGrant"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "EventsOperationsForCDK",
+      "Effect": "Allow",
+      "Action": [
+        "events:PutRule",
+        "events:DeleteRule",
+        "events:DescribeRule",
+        "events:ListRules",
+        "events:ListTargetsByRule",
+        "events:PutTargets",
+        "events:RemoveTargets",
+        "events:EnableRule",
+        "events:DisableRule",
+        "events:TagResource",
+        "events:UntagResource",
+        "events:ListTagsForResource"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "LambdaOperationsForCDK",
+      "Effect": "Allow",
+      "Action": [
+        "lambda:CreateFunction",
+        "lambda:DeleteFunction",
+        "lambda:GetFunction",
+        "lambda:GetFunctionConfiguration",
+        "lambda:UpdateFunctionConfiguration",
+        "lambda:UpdateFunctionCode",
+        "lambda:ListFunctions",
+        "lambda:ListVersionsByFunction",
+        "lambda:PublishVersion",
+        "lambda:CreateAlias",
+        "lambda:DeleteAlias",
+        "lambda:UpdateAlias",
+        "lambda:GetAlias",
+        "lambda:ListAliases",
+        "lambda:AddPermission",
+        "lambda:RemovePermission",
+        "lambda:GetPolicy",
+        "lambda:InvokeFunction",
+        "lambda:TagResource",
+        "lambda:UntagResource",
+        "lambda:ListTags",
+        "lambda:PutFunctionConcurrency",
+        "lambda:DeleteFunctionConcurrency",
+        "lambda:PutFunctionEventInvokeConfig",
+        "lambda:DeleteFunctionEventInvokeConfig",
+        "lambda:UpdateFunctionEventInvokeConfig"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "AutoScalingOperations",
+      "Effect": "Allow",
+      "Action": [
+        "autoscaling:CreateAutoScalingGroup",
+        "autoscaling:DeleteAutoScalingGroup",
+        "autoscaling:DescribeAutoScalingGroups",
+        "autoscaling:UpdateAutoScalingGroup",
+        "autoscaling:CreateLaunchConfiguration",
+        "autoscaling:DeleteLaunchConfiguration",
+        "autoscaling:DescribeLaunchConfigurations",
+        "autoscaling:AttachLoadBalancers",
+        "autoscaling:DetachLoadBalancers",
+        "autoscaling:AttachLoadBalancerTargetGroups",
+        "autoscaling:DetachLoadBalancerTargetGroups",
+        "autoscaling:PutScalingPolicy",
+        "autoscaling:DeletePolicy",
+        "autoscaling:DescribePolicies",
+        "autoscaling:EnableMetricsCollection",
+        "autoscaling:DisableMetricsCollection",
+        "autoscaling:PutScheduledUpdateGroupAction",
+        "autoscaling:DeleteScheduledAction",
+        "autoscaling:DescribeScheduledActions",
+        "autoscaling:PutNotificationConfiguration",
+        "autoscaling:DeleteNotificationConfiguration",
+        "autoscaling:DescribeNotificationConfigurations",
+        "autoscaling:SuspendProcesses",
+        "autoscaling:ResumeProcesses",
+        "autoscaling:SetDesiredCapacity",
+        "autoscaling:TerminateInstanceInAutoScalingGroup",
+        "autoscaling:AttachInstances",
+        "autoscaling:DetachInstances",
+        "autoscaling:SetInstanceProtection",
+        "autoscaling:PutLifecycleHook",
+        "autoscaling:DeleteLifecycleHook",
+        "autoscaling:DescribeLifecycleHooks",
+        "autoscaling:PutInstanceInStandby",
+        "autoscaling:ExitStandby",
+        "autoscaling:CreateOrUpdateTags",
+        "autoscaling:DeleteTags",
+        "autoscaling:DescribeTags"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "ApplicationAutoScalingOperations",
+      "Effect": "Allow",
+      "Action": [
+        "application-autoscaling:RegisterScalableTarget",
+        "application-autoscaling:DeregisterScalableTarget",
+        "application-autoscaling:DescribeScalableTargets",
+        "application-autoscaling:PutScalingPolicy",
+        "application-autoscaling:DeleteScalingPolicy",
+        "application-autoscaling:DescribeScalingPolicies",
+        "application-autoscaling:DescribeScalingActivities",
+        "application-autoscaling:TagResource",
+        "application-autoscaling:UntagResource",
+        "application-autoscaling:ListTagsForResource"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "SNSOperations",
+      "Effect": "Allow",
+      "Action": [
+        "sns:CreateTopic",
+        "sns:DeleteTopic",
+        "sns:GetTopicAttributes",
+        "sns:SetTopicAttributes",
+        "sns:ListTopics",
+        "sns:Subscribe",
+        "sns:Unsubscribe",
+        "sns:ListSubscriptionsByTopic",
+        "sns:ConfirmSubscription",
+        "sns:Publish",
+        "sns:AddPermission",
+        "sns:RemovePermission",
+        "sns:TagResource",
+        "sns:UntagResource",
+        "sns:ListTagsForResource"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "SQSOperations",
+      "Effect": "Allow",
+      "Action": [
+        "sqs:CreateQueue",
+        "sqs:DeleteQueue",
+        "sqs:GetQueueAttributes",
+        "sqs:SetQueueAttributes",
+        "sqs:ListQueues",
+        "sqs:ListQueueTags",
+        "sqs:TagQueue",
+        "sqs:UntagQueue",
+        "sqs:AddPermission",
+        "sqs:RemovePermission",
+        "sqs:SendMessage",
+        "sqs:ReceiveMessage",
+        "sqs:DeleteMessage",
+        "sqs:PurgeQueue",
+        "sqs:GetQueueUrl"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "DynamoDBOperations",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:CreateTable",
+        "dynamodb:DeleteTable",
+        "dynamodb:DescribeTable",
+        "dynamodb:ListTables",
+        "dynamodb:UpdateTable",
+        "dynamodb:PutItem",
+        "dynamodb:GetItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:BatchGetItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:TagResource",
+        "dynamodb:UntagResource",
+        "dynamodb:ListTagsOfResource",
+        "dynamodb:DescribeTimeToLive",
+        "dynamodb:UpdateTimeToLive",
+        "dynamodb:DescribeContinuousBackups",
+        "dynamodb:UpdateContinuousBackups",
+        "dynamodb:DescribeKinesisStreamingDestination",
+        "dynamodb:EnableKinesisStreamingDestination",
+        "dynamodb:DisableKinesisStreamingDestination",
+        "dynamodb:CreateGlobalTable",
+        "dynamodb:UpdateGlobalTable",
+        "dynamodb:DescribeGlobalTable",
+        "dynamodb:ListGlobalTables",
+        "dynamodb:UpdateGlobalTableSettings",
+        "dynamodb:DescribeGlobalTableSettings"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "Route53Operations",
+      "Effect": "Allow",
+      "Action": [
+        "route53:CreateHostedZone",
+        "route53:DeleteHostedZone",
+        "route53:GetHostedZone",
+        "route53:ListHostedZones",
+        "route53:ChangeResourceRecordSets",
+        "route53:ListResourceRecordSets",
+        "route53:GetChange",
+        "route53:CreateHealthCheck",
+        "route53:DeleteHealthCheck",
+        "route53:GetHealthCheck",
+        "route53:ListHealthChecks",
+        "route53:UpdateHealthCheck",
+        "route53:AssociateVPCWithHostedZone",
+        "route53:DisassociateVPCFromHostedZone",
+        "route53:CreateQueryLoggingConfig",
+        "route53:DeleteQueryLoggingConfig",
+        "route53:GetQueryLoggingConfig",
+        "route53:ListQueryLoggingConfigs",
+        "route53:ListTagsForResource",
+        "route53:ChangeTagsForResource",
+        "route53:GetHostedZoneCount"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "CertificateManagerOperations",
+      "Effect": "Allow",
+      "Action": [
+        "acm:RequestCertificate",
+        "acm:DeleteCertificate",
+        "acm:DescribeCertificate",
+        "acm:ListCertificates",
+        "acm:ListTagsForCertificate",
+        "acm:AddTagsToCertificate",
+        "acm:RemoveTagsFromCertificate",
+        "acm:UpdateCertificateOptions",
+        "acm:ImportCertificate",
+        "acm:ExportCertificate",
+        "acm:GetCertificate",
+        "acm:RenewCertificate",
+        "acm:ResendValidationEmail"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "ServiceDiscoveryOperations",
+      "Effect": "Allow",
+      "Action": [
+        "servicediscovery:CreateNamespace",
+        "servicediscovery:DeleteNamespace",
+        "servicediscovery:GetNamespace",
+        "servicediscovery:ListNamespaces",
+        "servicediscovery:CreateService",
+        "servicediscovery:DeleteService",
+        "servicediscovery:GetService",
+        "servicediscovery:ListServices",
+        "servicediscovery:UpdateService",
+        "servicediscovery:RegisterInstance",
+        "servicediscovery:DeregisterInstance",
+        "servicediscovery:GetInstance",
+        "servicediscovery:ListInstances",
+        "servicediscovery:GetInstancesHealthStatus",
+        "servicediscovery:UpdateInstanceCustomHealthStatus",
+        "servicediscovery:TagResource",
+        "servicediscovery:UntagResource",
+        "servicediscovery:ListTagsForResource",
+        "servicediscovery:GetOperation"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "CodeDeployOperations",
+      "Effect": "Allow",
+      "Action": [
+        "codedeploy:CreateApplication",
+        "codedeploy:DeleteApplication",
+        "codedeploy:GetApplication",
+        "codedeploy:ListApplications",
+        "codedeploy:UpdateApplication",
+        "codedeploy:CreateDeploymentGroup",
+        "codedeploy:DeleteDeploymentGroup",
+        "codedeploy:GetDeploymentGroup",
+        "codedeploy:ListDeploymentGroups",
+        "codedeploy:UpdateDeploymentGroup",
+        "codedeploy:CreateDeployment",
+        "codedeploy:GetDeployment",
+        "codedeploy:ListDeployments",
+        "codedeploy:StopDeployment",
+        "codedeploy:RegisterApplicationRevision",
+        "codedeploy:GetApplicationRevision",
+        "codedeploy:ListApplicationRevisions",
+        "codedeploy:BatchGetDeploymentGroups",
+        "codedeploy:BatchGetApplications",
+        "codedeploy:BatchGetDeployments",
+        "codedeploy:TagResource",
+        "codedeploy:UntagResource",
+        "codedeploy:ListTagsForResource",
+        "codedeploy:PutLifecycleEventHookExecutionStatus"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "CodeBuildOperations",
+      "Effect": "Allow",
+      "Action": [
+        "codebuild:CreateProject",
+        "codebuild:DeleteProject",
+        "codebuild:BatchGetProjects",
+        "codebuild:ListProjects",
+        "codebuild:UpdateProject",
+        "codebuild:StartBuild",
+        "codebuild:StopBuild",
+        "codebuild:BatchGetBuilds",
+        "codebuild:ListBuilds",
+        "codebuild:ListBuildsForProject",
+        "codebuild:RetryBuild",
+        "codebuild:BatchDeleteBuilds",
+        "codebuild:CreateReportGroup",
+        "codebuild:DeleteReportGroup",
+        "codebuild:ListReportGroups",
+        "codebuild:UpdateReportGroup",
+        "codebuild:CreateWebhook",
+        "codebuild:DeleteWebhook",
+        "codebuild:UpdateWebhook",
+        "codebuild:ListWebhooks",
+        "codebuild:PutResourcePolicy",
+        "codebuild:DeleteResourcePolicy",
+        "codebuild:TagResource",
+        "codebuild:UntagResource",
+        "codebuild:ListTagsForResource"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "CodePipelineOperations",
+      "Effect": "Allow",
+      "Action": [
+        "codepipeline:CreatePipeline",
+        "codepipeline:DeletePipeline",
+        "codepipeline:GetPipeline",
+        "codepipeline:GetPipelineState",
+        "codepipeline:ListPipelines",
+        "codepipeline:UpdatePipeline",
+        "codepipeline:StartPipelineExecution",
+        "codepipeline:StopPipelineExecution",
+        "codepipeline:RetryStageExecution",
+        "codepipeline:EnableStageTransition",
+        "codepipeline:DisableStageTransition",
+        "codepipeline:PutWebhook",
+        "codepipeline:DeleteWebhook",
+        "codepipeline:ListWebhooks",
+        "codepipeline:PutActionRevision",
+        "codepipeline:PutApprovalResult",
+        "codepipeline:AcknowledgeJob",
+        "codepipeline:PollForJobs",
+        "codepipeline:TagResource",
+        "codepipeline:UntagResource",
+        "codepipeline:ListTagsForResource"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "CloudFrontOperations",
+      "Effect": "Allow",
+      "Action": [
+        "cloudfront:CreateDistribution",
+        "cloudfront:DeleteDistribution",
+        "cloudfront:GetDistribution",
+        "cloudfront:UpdateDistribution",
+        "cloudfront:ListDistributions",
+        "cloudfront:CreateDistributionWithTags",
+        "cloudfront:TagResource",
+        "cloudfront:UntagResource",
+        "cloudfront:ListTagsForResource",
+        "cloudfront:CreateOriginAccessIdentity",
+        "cloudfront:DeleteOriginAccessIdentity",
+        "cloudfront:GetOriginAccessIdentity",
+        "cloudfront:ListOriginAccessIdentities",
+        "cloudfront:UpdateOriginAccessIdentity",
+        "cloudfront:CreateCachePolicy",
+        "cloudfront:DeleteCachePolicy",
+        "cloudfront:GetCachePolicy",
+        "cloudfront:ListCachePolicies",
+        "cloudfront:CreateOriginRequestPolicy",
+        "cloudfront:DeleteOriginRequestPolicy",
+        "cloudfront:GetOriginRequestPolicy",
+        "cloudfront:ListOriginRequestPolicies",
+        "cloudfront:CreateFieldLevelEncryptionConfig",
+        "cloudfront:DeleteFieldLevelEncryptionConfig",
+        "cloudfront:GetFieldLevelEncryption",
+        "cloudfront:ListFieldLevelEncryptionConfigs",
+        "cloudfront:CreateFieldLevelEncryptionProfile",
+        "cloudfront:DeleteFieldLevelEncryptionProfile",
+        "cloudfront:GetFieldLevelEncryptionProfile",
+        "cloudfront:ListFieldLevelEncryptionProfiles",
+        "cloudfront:CreatePublicKey",
+        "cloudfront:DeletePublicKey",
+        "cloudfront:GetPublicKey",
+        "cloudfront:ListPublicKeys",
+        "cloudfront:CreateCloudFrontOriginAccessIdentity",
+        "cloudfront:DeleteCloudFrontOriginAccessIdentity",
+        "cloudfront:GetCloudFrontOriginAccessIdentity",
+        "cloudfront:ListCloudFrontOriginAccessIdentities",
+        "cloudfront:CreateFunction",
+        "cloudfront:DeleteFunction",
+        "cloudfront:GetFunction",
+        "cloudfront:ListFunctions",
+        "cloudfront:PublishFunction",
+        "cloudfront:TestFunction",
+        "cloudfront:UpdateFunction",
+        "cloudfront:CreateKeyGroup",
+        "cloudfront:DeleteKeyGroup",
+        "cloudfront:GetKeyGroup",
+        "cloudfront:ListKeyGroups",
+        "cloudfront:CreateMonitoringSubscription",
+        "cloudfront:DeleteMonitoringSubscription",
+        "cloudfront:GetMonitoringSubscription",
+        "cloudfront:CreateRealtimeLogConfig",
+        "cloudfront:DeleteRealtimeLogConfig",
+        "cloudfront:GetRealtimeLogConfig",
+        "cloudfront:ListRealtimeLogConfigs",
+        "cloudfront:UpdateRealtimeLogConfig",
+        "cloudfront:CreateResponseHeadersPolicy",
+        "cloudfront:DeleteResponseHeadersPolicy",
+        "cloudfront:GetResponseHeadersPolicy",
+        "cloudfront:ListResponseHeadersPolicies"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "StepFunctionsOperations",
+      "Effect": "Allow",
+      "Action": [
+        "states:CreateStateMachine",
+        "states:DeleteStateMachine",
+        "states:DescribeStateMachine",
+        "states:ListStateMachines",
+        "states:UpdateStateMachine",
+        "states:TagResource",
+        "states:UntagResource",
+        "states:ListTagsForResource",
+        "states:StartExecution",
+        "states:StopExecution",
+        "states:DescribeExecution",
+        "states:ListExecutions",
+        "states:GetExecutionHistory",
+        "states:CreateActivity",
+        "states:DeleteActivity",
+        "states:DescribeActivity",
+        "states:ListActivities",
+        "states:SendTaskHeartbeat",
+        "states:SendTaskSuccess",
+        "states:SendTaskFailure"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "APIGatewayOperations",
+      "Effect": "Allow",
+      "Action": [
+        "apigateway:POST",
+        "apigateway:GET",
+        "apigateway:PUT",
+        "apigateway:DELETE",
+        "apigateway:PATCH",
+        "apigateway:SetWebACL",
+        "apigateway:UpdateRestApiPolicy",
+        "apigateway:AddCertificateToDomain",
+        "apigateway:RemoveCertificateFromDomain"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "APIGatewayV2Operations",
+      "Effect": "Allow",
+      "Action": [
+        "apigatewayv2:CreateApi",
+        "apigatewayv2:DeleteApi",
+        "apigatewayv2:GetApi",
+        "apigatewayv2:GetApis",
+        "apigatewayv2:UpdateApi",
+        "apigatewayv2:CreateStage",
+        "apigatewayv2:DeleteStage",
+        "apigatewayv2:GetStage",
+        "apigatewayv2:GetStages",
+        "apigatewayv2:UpdateStage",
+        "apigatewayv2:CreateRoute",
+        "apigatewayv2:DeleteRoute",
+        "apigatewayv2:GetRoute",
+        "apigatewayv2:GetRoutes",
+        "apigatewayv2:UpdateRoute",
+        "apigatewayv2:CreateIntegration",
+        "apigatewayv2:DeleteIntegration",
+        "apigatewayv2:GetIntegration",
+        "apigatewayv2:GetIntegrations",
+        "apigatewayv2:UpdateIntegration",
+        "apigatewayv2:CreateRouteResponse",
+        "apigatewayv2:DeleteRouteResponse",
+        "apigatewayv2:GetRouteResponse",
+        "apigatewayv2:GetRouteResponses",
+        "apigatewayv2:UpdateRouteResponse",
+        "apigatewayv2:CreateIntegrationResponse",
+        "apigatewayv2:DeleteIntegrationResponse",
+        "apigatewayv2:GetIntegrationResponse",
+        "apigatewayv2:GetIntegrationResponses",
+        "apigatewayv2:UpdateIntegrationResponse",
+        "apigatewayv2:CreateDeployment",
+        "apigatewayv2:DeleteDeployment",
+        "apigatewayv2:GetDeployment",
+        "apigatewayv2:GetDeployments",
+        "apigatewayv2:CreateAuthorizer",
+        "apigatewayv2:DeleteAuthorizer",
+        "apigatewayv2:GetAuthorizer",
+        "apigatewayv2:GetAuthorizers",
+        "apigatewayv2:UpdateAuthorizer",
+        "apigatewayv2:CreateDomainName",
+        "apigatewayv2:DeleteDomainName",
+        "apigatewayv2:GetDomainName",
+        "apigatewayv2:GetDomainNames",
+        "apigatewayv2:UpdateDomainName",
+        "apigatewayv2:CreateApiMapping",
+        "apigatewayv2:DeleteApiMapping",
+        "apigatewayv2:GetApiMapping",
+        "apigatewayv2:GetApiMappings",
+        "apigatewayv2:UpdateApiMapping",
+        "apigatewayv2:TagResource",
+        "apigatewayv2:UntagResource",
+        "apigatewayv2:GetTags"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "WAFv2Operations",
+      "Effect": "Allow",
+      "Action": [
+        "wafv2:CreateWebACL",
+        "wafv2:DeleteWebACL",
+        "wafv2:GetWebACL",
+        "wafv2:ListWebACLs",
+        "wafv2:UpdateWebACL",
+        "wafv2:CreateRuleGroup",
+        "wafv2:DeleteRuleGroup",
+        "wafv2:GetRuleGroup",
+        "wafv2:ListRuleGroups",
+        "wafv2:UpdateRuleGroup",
+        "wafv2:CreateIPSet",
+        "wafv2:DeleteIPSet",
+        "wafv2:GetIPSet",
+        "wafv2:ListIPSets",
+        "wafv2:UpdateIPSet",
+        "wafv2:CreateRegexPatternSet",
+        "wafv2:DeleteRegexPatternSet",
+        "wafv2:GetRegexPatternSet",
+        "wafv2:ListRegexPatternSets",
+        "wafv2:UpdateRegexPatternSet",
+        "wafv2:AssociateWebACL",
+        "wafv2:DisassociateWebACL",
+        "wafv2:GetWebACLForResource",
+        "wafv2:ListResourcesForWebACL",
+        "wafv2:TagResource",
+        "wafv2:UntagResource",
+        "wafv2:ListTagsForResource",
+        "wafv2:PutLoggingConfiguration",
+        "wafv2:DeleteLoggingConfiguration",
+        "wafv2:GetLoggingConfiguration",
+        "wafv2:ListLoggingConfigurations",
+        "wafv2:PutManagedRuleSetVersions",
+        "wafv2:CheckCapacity",
+        "wafv2:CreateAPIKey",
+        "wafv2:DeleteAPIKey",
+        "wafv2:ListAPIKeys"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "BackupOperations",
+      "Effect": "Allow",
+      "Action": [
+        "backup:CreateBackupPlan",
+        "backup:DeleteBackupPlan",
+        "backup:GetBackupPlan",
+        "backup:ListBackupPlans",
+        "backup:UpdateBackupPlan",
+        "backup:CreateBackupSelection",
+        "backup:DeleteBackupSelection",
+        "backup:GetBackupSelection",
+        "backup:ListBackupSelections",
+        "backup:UpdateBackupSelection",
+        "backup:CreateBackupVault",
+        "backup:DeleteBackupVault",
+        "backup:GetBackupVault",
+        "backup:ListBackupVaults",
+        "backup:UpdateBackupVault",
+        "backup:CreateBackupVaultAccessPolicy",
+        "backup:DeleteBackupVaultAccessPolicy",
+        "backup:GetBackupVaultAccessPolicy",
+        "backup:PutBackupVaultAccessPolicy",
+        "backup:CreateBackupVaultNotifications",
+        "backup:DeleteBackupVaultNotifications",
+        "backup:GetBackupVaultNotifications",
+        "backup:PutBackupVaultNotifications",
+        "backup:CreateBackupVaultLockConfiguration",
+        "backup:DeleteBackupVaultLockConfiguration",
+        "backup:GetBackupVaultLockConfiguration",
+        "backup:PutBackupVaultLockConfiguration",
+        "backup:StartBackupJob",
+        "backup:StopBackupJob",
+        "backup:DescribeBackupJob",
+        "backup:ListBackupJobs",
+        "backup:StartRestoreJob",
+        "backup:DescribeRestoreJob",
+        "backup:ListRestoreJobs",
+        "backup:StartCopyJob",
+        "backup:DescribeCopyJob",
+        "backup:ListCopyJobs",
+        "backup:TagResource",
+        "backup:UntagResource",
+        "backup:ListTags",
+        "backup:ListProtectedResources",
+        "backup:DescribeProtectedResource",
+        "backup:ListRecoveryPointsByResource",
+        "backup:ListRecoveryPointsByBackupVault",
+        "backup:DescribeRecoveryPoint",
+        "backup:DeleteRecoveryPoint",
+        "backup:UpdateRecoveryPointLifecycle",
+        "backup:PutBackupVaultSharingPolicy",
+        "backup:GetBackupVaultSharingPolicy",
+        "backup:DeleteBackupVaultSharingPolicy"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "GuardDutyOperations",
+      "Effect": "Allow",
+      "Action": [
+        "guardduty:CreateDetector",
+        "guardduty:DeleteDetector",
+        "guardduty:GetDetector",
+        "guardduty:UpdateDetector",
+        "guardduty:ListDetectors",
+        "guardduty:CreateFilter",
+        "guardduty:DeleteFilter",
+        "guardduty:GetFilter",
+        "guardduty:UpdateFilter",
+        "guardduty:ListFilters",
+        "guardduty:CreateIPSet",
+        "guardduty:DeleteIPSet",
+        "guardduty:GetIPSet",
+        "guardduty:UpdateIPSet",
+        "guardduty:ListIPSets",
+        "guardduty:CreateThreatIntelSet",
+        "guardduty:DeleteThreatIntelSet",
+        "guardduty:GetThreatIntelSet",
+        "guardduty:UpdateThreatIntelSet",
+        "guardduty:ListThreatIntelSets",
+        "guardduty:CreateMembers",
+        "guardduty:DeleteMembers",
+        "guardduty:GetMembers",
+        "guardduty:UpdateMembers",
+        "guardduty:ListMembers",
+        "guardduty:InviteMembers",
+        "guardduty:DisassociateMembers",
+        "guardduty:CreatePublishingDestination",
+        "guardduty:DeletePublishingDestination",
+        "guardduty:DescribePublishingDestination",
+        "guardduty:UpdatePublishingDestination",
+        "guardduty:ListPublishingDestinations",
+        "guardduty:CreateSampleFindings",
+        "guardduty:ArchiveFindings",
+        "guardduty:UnarchiveFindings",
+        "guardduty:ListFindings",
+        "guardduty:GetFindings",
+        "guardduty:GetFindingStatistics",
+        "guardduty:TagResource",
+        "guardduty:UntagResource",
+        "guardduty:ListTagsForResource",
+        "guardduty:EnableOrganizationAdminAccount",
+        "guardduty:DisableOrganizationAdminAccount",
+        "guardduty:GetOrganizationAdminAccount",
+        "guardduty:EnableOrganizationAdminAccountDelegations",
+        "guardduty:DisableOrganizationAdminAccountDelegations"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "SecurityHubOperations",
+      "Effect": "Allow",
+      "Action": [
+        "securityhub:EnableSecurityHub",
+        "securityhub:DisableSecurityHub",
+        "securityhub:DescribeHub",
+        "securityhub:GetEnabledStandards",
+        "securityhub:BatchEnableStandards",
+        "securityhub:BatchDisableStandards",
+        "securityhub:GetFindings",
+        "securityhub:BatchImportFindings",
+        "securityhub:BatchUpdateFindings",
+        "securityhub:CreateActionTarget",
+        "securityhub:DeleteActionTarget",
+        "securityhub:DescribeActionTargets",
+        "securityhub:UpdateActionTarget",
+        "securityhub:CreateInsight",
+        "securityhub:DeleteInsight",
+        "securityhub:GetInsights",
+        "securityhub:UpdateInsight",
+        "securityhub:TagResource",
+        "securityhub:UntagResource",
+        "securityhub:ListTagsForResource",
+        "securityhub:CreateMembers",
+        "securityhub:DeleteMembers",
+        "securityhub:GetMembers",
+        "securityhub:InviteMembers",
+        "securityhub:DisassociateMembers",
+        "securityhub:ListMembers",
+        "securityhub:EnableImportFindingsForProduct",
+        "securityhub:DisableImportFindingsForProduct",
+        "securityhub:ListEnabledProductsForImport",
+        "securityhub:EnableOrganizationAdminAccount",
+        "securityhub:DisableOrganizationAdminAccount",
+        "securityhub:DescribeOrganizationConfiguration",
+        "securityhub:UpdateOrganizationConfiguration",
+        "securityhub:CreateConfigurationPolicy",
+        "securityhub:DeleteConfigurationPolicy",
+        "securityhub:UpdateConfigurationPolicy",
+        "securityhub:GetConfigurationPolicy",
+        "securityhub:ListConfigurationPolicies",
+        "securityhub:StartConfigurationPolicyAssociation",
+        "securityhub:StartConfigurationPolicyDisassociation",
+        "securityhub:GetConfigurationPolicyAssociation",
+        "securityhub:ListConfigurationPolicyAssociations"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "ConfigOperations",
+      "Effect": "Allow",
+      "Action": [
+        "config:PutConfigurationRecorder",
+        "config:DeleteConfigurationRecorder",
+        "config:DescribeConfigurationRecorders",
+        "config:DescribeConfigurationRecorderStatus",
+        "config:StartConfigurationRecorder",
+        "config:StopConfigurationRecorder",
+        "config:PutDeliveryChannel",
+        "config:DeleteDeliveryChannel",
+        "config:DescribeDeliveryChannels",
+        "config:DescribeDeliveryChannelStatus",
+        "config:PutConfigRule",
+        "config:DeleteConfigRule",
+        "config:DescribeConfigRules",
+        "config:PutOrganizationConfigRule",
+        "config:DeleteOrganizationConfigRule",
+        "config:DescribeOrganizationConfigRules",
+        "config:PutOrganizationConformancePack",
+        "config:DeleteOrganizationConformancePack",
+        "config:DescribeOrganizationConformancePacks",
+        "config:PutConformancePack",
+        "config:DeleteConformancePack",
+        "config:DescribeConformancePacks",
+        "config:PutRemediationConfigurations",
+        "config:DeleteRemediationConfiguration",
+        "config:DescribeRemediationConfigurations",
+        "config:PutRemediationExceptions",
+        "config:DeleteRemediationException",
+        "config:DescribeRemediationExceptions",
+        "config:PutAggregationAuthorization",
+        "config:DeleteAggregationAuthorization",
+        "config:DescribeAggregationAuthorizations",
+        "config:PutConfigurationAggregator",
+        "config:DeleteConfigurationAggregator",
+        "config:DescribeConfigurationAggregators",
+        "config:PutEvaluations",
+        "config:StartConfigRulesEvaluation",
+        "config:StartRemediationExecution",
+        "config:StartDeliveryChannelRecorder",
+        "config:StopDeliveryChannelRecorder",
+        "config:TagResource",
+        "config:UntagResource",
+        "config:ListTagsForResource",
+        "config:SelectResourceConfig",
+        "config:BatchGetAggregateResourceConfig",
+        "config:BatchGetResourceConfig",
+        "config:GetAggregateResourceConfig",
+        "config:GetResourceConfigHistory",
+        "config:ListAggregateDiscoveredResources",
+        "config:ListDiscoveredResources",
+        "config:GetComplianceDetailsByConfigRule",
+        "config:GetComplianceDetailsByResource",
+        "config:GetComplianceSummaryByConfigRule",
+        "config:GetComplianceSummaryByResourceType",
+        "config:GetDiscoveredResourceCounts",
+        "config:GetResourceComplianceTimeline",
+        "config:GetResourceConfigHistory"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "SageMakerOperations",
+      "Effect": "Allow",
+      "Action": [
+        "sagemaker:CreateNotebookInstance",
+        "sagemaker:DeleteNotebookInstance",
+        "sagemaker:DescribeNotebookInstance",
+        "sagemaker:ListNotebookInstances",
+        "sagemaker:UpdateNotebookInstance",
+        "sagemaker:StartNotebookInstance",
+        "sagemaker:StopNotebookInstance",
+        "sagemaker:CreateModel",
+        "sagemaker:DeleteModel",
+        "sagemaker:DescribeModel",
+        "sagemaker:ListModels",
+        "sagemaker:CreateEndpoint",
+        "sagemaker:DeleteEndpoint",
+        "sagemaker:DescribeEndpoint",
+        "sagemaker:ListEndpoints",
+        "sagemaker:UpdateEndpoint",
+        "sagemaker:CreateEndpointConfig",
+        "sagemaker:DeleteEndpointConfig",
+        "sagemaker:DescribeEndpointConfig",
+        "sagemaker:ListEndpointConfigs",
+        "sagemaker:CreateTrainingJob",
+        "sagemaker:StopTrainingJob",
+        "sagemaker:DescribeTrainingJob",
+        "sagemaker:ListTrainingJobs",
+        "sagemaker:CreateTransformJob",
+        "sagemaker:StopTransformJob",
+        "sagemaker:DescribeTransformJob",
+        "sagemaker:ListTransformJobs",
+        "sagemaker:CreateProcessingJob",
+        "sagemaker:StopProcessingJob",
+        "sagemaker:DescribeProcessingJob",
+        "sagemaker:ListProcessingJobs",
+        "sagemaker:CreateHyperParameterTuningJob",
+        "sagemaker:StopHyperParameterTuningJob",
+        "sagemaker:DescribeHyperParameterTuningJob",
+        "sagemaker:ListHyperParameterTuningJobs",
+        "sagemaker:AddTags",
+        "sagemaker:DeleteTags",
+        "sagemaker:ListTags"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "IAMPassRoleForCDK",
+      "Effect": "Allow",
+      "Action": "iam:PassRole",
+      "Resource": [
+        "arn:aws:iam::*:role/OpenClaw*",
+        "arn:aws:iam::*:role/openclaw*",
+        "arn:aws:iam::*:role/cdk-*"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "iam:PassedToService": [
+            "cloudformation.amazonaws.com",
+            "ecs.amazonaws.com",
+            "ecs-tasks.amazonaws.com",
+            "ec2.amazonaws.com",
+            "lambda.amazonaws.com",
+            "elasticloadbalancing.amazonaws.com",
+            "logs.amazonaws.com",
+            "events.amazonaws.com",
+            "codebuild.amazonaws.com",
+            "codepipeline.amazonaws.com",
+            "states.amazonaws.com",
+            "backup.amazonaws.com",
+            "ssm.amazonaws.com",
+            "sns.amazonaws.com",
+            "sqs.amazonaws.com",
+            "secretsmanager.amazonaws.com"
+          ],
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    }
+  ]
+}
