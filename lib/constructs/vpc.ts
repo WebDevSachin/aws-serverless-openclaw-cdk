@@ -63,7 +63,7 @@ export class OpenClawVpc extends Construct {
 
   /**
    * Security group for Fargate tasks
-   * Allows inbound port 3000 only from ALB security group
+   * Allows inbound port 18789 only from ALB security group
    */
   public readonly fargateSecurityGroup: ec2.ISecurityGroup;
 
@@ -139,11 +139,11 @@ export class OpenClawVpc extends Construct {
       allowAllOutbound: true,
     });
 
-    // Inbound: Port 3000 from ALB security group only
+    // Inbound: Port 18789 from ALB security group only (OpenClaw default port)
     this.fargateSecurityGroup.addIngressRule(
       this.albSecurityGroup,
-      ec2.Port.tcp(3000),
-      'Allow traffic from ALB to container port 3000'
+      ec2.Port.tcp(18789),
+      'Allow traffic from ALB to container port 18789'
     );
   }
 

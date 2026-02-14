@@ -1,110 +1,34 @@
-# OpenClaw Docker Image
-# Multi-stage build for optimized production image
-# Optimized for ARM64 (Graviton) architecture
+FROM ghcr.io/openclaw/openclaw:latest
 
-# -----------------------------------------------------------------------------
-# Stage 1: Dependencies
-# -----------------------------------------------------------------------------
-FROM node:20-alpine AS deps
+USER root
 
-WORKDIR /deps
-
-# Install build dependencies
-RUN apk add --no-cache python3 make g++ git
-
-# Copy package files and install dependencies
-COPY package*.json ./
-RUN npm ci --only=production
-
-# -----------------------------------------------------------------------------
-# Stage 2: Builder
-# -----------------------------------------------------------------------------
-FROM node:20-alpine AS builder
-
-WORKDIR /build
-
-# Install build dependencies
-RUN apk add --no-cache python3 make g++ git
-
-# Copy dependencies from deps stage
-COPY --from=deps /deps/node_modules ./node_modules
-COPY --from=deps /deps/package*.json ./
-
-# Copy source code
-COPY . .
-
-# Build the application (if build script exists)
-RUN if [ -f "package.json" ] && grep -q '"build"' package.json; then npm run build; fi
-
-# -----------------------------------------------------------------------------
-# Stage 3: Production Runner
-# -----------------------------------------------------------------------------
-FROM node:20-alpine AS runner
-
-# Install runtime dependencies including AWS CLI and curl
-RUN apk add --no-cache \
-    ca-certificates \
-    curl \
+# Install AWS CLI for S3 operations (following best practice of baking deps into image)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    awscli \
     jq \
-    git \
-    openssh-client \
-    bash \
-    aws-cli \
-    unzip
+    curl \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Create non-root user
-RUN addgroup -g 1000 -S openclaw && \
-    adduser -u 1000 -S openclaw -G openclaw
+# Create .openclaw directory with full permissions (will be EFS mount point)
+RUN mkdir -p /home/node/.openclaw && chmod -R 777 /home/node/.openclaw && chown -R node:node /home/node/.openclaw
 
-# Set working directory
-WORKDIR /app
+# Stage default config OUTSIDE the EFS mount path
+# EFS mounts at /home/node/.openclaw and hides anything baked in there
+# The entrypoint will copy this into the EFS mount on first boot
+RUN mkdir -p /opt/openclaw
+COPY docker/config/openclaw.json /opt/openclaw/default-config.json
+RUN chown node:node /opt/openclaw/default-config.json
 
-# Copy dependencies from deps stage
-COPY --from=deps /deps/node_modules ./node_modules
-COPY --from=deps /deps/package*.json ./
+# Copy entrypoint script
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Copy built application from builder stage
-COPY --from=builder /build/dist ./dist 2>/dev/null || true
-COPY --from=builder /build/src ./src 2>/dev/null || true
+# Stay as root for maximum permissions in ECS container
+# EFS access point enforces node:node ownership anyway
 
-# Copy default configs to /defaults/
-RUN mkdir -p /defaults
-COPY docker/config/openclaw.json /defaults/openclaw.json
-COPY docker/config/SOUL.md /defaults/SOUL.md
-COPY docker/config/USER.md /defaults/USER.md
+# Set environment variables for config location (following official docs)
+ENV OPENCLAW_HOME=/home/node/.openclaw
 
-# Create workspace directory structure
-RUN mkdir -p /workspace/config /workspace/memory /workspace/logs && \
-    chown -R openclaw:openclaw /workspace
-
-# Copy and set up entrypoint script
-COPY docker/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
-# Set proper ownership
-RUN chown -R openclaw:openclaw /app
-
-# Switch to non-root user
-USER openclaw
-
-# Set environment variables
-ENV NODE_ENV=production \
-    PORT=3000 \
-    DATA_DIR=/workspace \
-    CONFIG_DIR=/workspace/config \
-    BEDROCK_MODEL_ID=anthropic.claude-3-5-haiku-20241022-v1:0 \
-    BEDROCK_REGION=us-east-1 \
-    AWS_DEFAULT_REGION=us-east-1
-
-# Expose port
-EXPOSE 3000
-
-# Health check on port 3000, path /health
-HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:3000/health || exit 1
-
-# Use entrypoint.sh as ENTRYPOINT
-ENTRYPOINT ["/entrypoint.sh"]
-
-# Default command
-CMD ["node", "dist/index.js"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["node", "openclaw.mjs", "gateway", "--port", "18789", "--verbose", "--allow-unconfigured"]

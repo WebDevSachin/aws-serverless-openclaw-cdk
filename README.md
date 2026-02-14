@@ -131,8 +131,8 @@ npx cdk deploy --progress events
 aws ecr get-login-password --region us-east-1 | \
   docker login --username AWS --password-stdin <account-id>.dkr.ecr.us-east-1.amazonaws.com
 
-# Build image (ARM64 for Graviton)
-docker build --platform linux/arm64 -t openclaw:latest ./docker
+# Build image (from official OpenClaw base + S3 config sync)
+docker build --platform linux/amd64 -f docker/Dockerfile -t openclaw:latest .
 
 # Tag and push
 docker tag openclaw:latest <account-id>.dkr.ecr.us-east-1.amazonaws.com/openclaw:latest

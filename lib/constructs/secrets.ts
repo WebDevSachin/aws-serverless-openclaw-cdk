@@ -11,6 +11,12 @@ export interface OpenClawSecretsProps {
    * @default false
    */
   createExternalApiSecret?: boolean;
+
+  /**
+   * OpenRouter API key for accessing various models including Kimi
+   * If provided, will create a secret with this value
+   */
+  openRouterApiKey?: string;
 }
 
 /**
@@ -23,6 +29,7 @@ export interface OpenClawSecretsProps {
 export class OpenClawSecrets extends Construct {
   public readonly gatewayTokenSecret: secretsmanager.ISecret;
   public readonly externalApiSecret?: secretsmanager.ISecret;
+  public readonly openRouterApiSecret?: secretsmanager.ISecret;
 
   constructor(scope: Construct, id: string, props?: OpenClawSecretsProps) {
     super(scope, id);
@@ -52,6 +59,17 @@ export class OpenClawSecrets extends Construct {
           })
         ),
         removalPolicy: cdk.RemovalPolicy.RETAIN,
+      });
+    }
+
+    // OpenRouter API key for accessing various models (Kimi, Claude, GPT, etc.)
+    if (props?.openRouterApiKey) {
+      this.openRouterApiSecret = new secretsmanager.Secret(this, 'OpenRouterApiSecret', {
+        secretName: `openclaw/openrouter-api-key-${stackName}`,
+        secretStringValue: cdk.SecretValue.unsafePlainText(
+          JSON.stringify({ apiKey: props.openRouterApiKey })
+        ),
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
       });
     }
   }

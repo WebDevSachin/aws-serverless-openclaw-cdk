@@ -54,6 +54,11 @@ export interface OpenClawFargateProps {
   readonly externalApiSecret?: secretsmanager.ISecret;
 
   /**
+   * Optional OpenRouter API secret for accessing various models
+   */
+  readonly openRouterApiSecret?: secretsmanager.ISecret;
+
+  /**
    * CPU units for the task (256, 512, 1024, etc.)
    * @default 512
    */
@@ -259,8 +264,9 @@ export class OpenClawFargate extends Construct {
     }
 
     // Build secrets configuration
+    // OPENCLAW_GATEWAY_TOKEN is used by the official OpenClaw image
     const secrets: { [key: string]: ecs.Secret } = {
-      OPENCLAW_GATEWAY_TOKEN: ecs.Secret.fromSecretsManager(props.gatewayTokenSecret),
+      OPENCLAW_GATEWAY_TOKEN: ecs.Secret.fromSecretsManager(props.gatewayTokenSecret, 'token'),
     };
 
     // Add external API secrets if provided
@@ -272,6 +278,14 @@ export class OpenClawFargate extends Construct {
       secrets.OPENAI_API_KEY = ecs.Secret.fromSecretsManager(
         props.externalApiSecret,
         'OPENAI_API_KEY'
+      );
+    }
+
+    // Add OpenRouter API key if provided (for Kimi, Claude, GPT, etc.)
+    if (props.openRouterApiSecret) {
+      secrets.OPENROUTER_API_KEY = ecs.Secret.fromSecretsManager(
+        props.openRouterApiSecret,
+        'apiKey'
       );
     }
 
@@ -291,8 +305,8 @@ export class OpenClawFargate extends Construct {
         S3_BUCKET: props.bucket.bucketName,
       },
       secrets,
-      // Override command to bind to LAN for ALB health checks
-      command: ['node', 'dist/index.js', 'gateway', '--allow-unconfigured', '--bind', 'lan'],
+      // No command override - Dockerfile ENTRYPOINT + CMD handles startup
+      // Config file has bind: "lan" for ALB/ECS compatibility
       // No container health check - relying on ALB health check only
     });
 

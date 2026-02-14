@@ -17,6 +17,7 @@ import { OpenClawSecrets } from './constructs/secrets';
 import { OpenClawFargate } from './constructs/fargate';
 import { OpenClawAlb } from './constructs/alb';
 import { OpenClawLogging } from './constructs/logging';
+import { OpenClawCloudFront } from './constructs/cloudfront';
 import { ConfigManagement } from './constructs/config-management';
 import {
   DEFAULT_CONTAINER_CONFIG,
@@ -66,7 +67,9 @@ export class OpenClawStack extends cdk.Stack {
     // ============================================================
     // Secrets - Secrets Manager
     // ============================================================
-    const secrets = new OpenClawSecrets(this, 'Secrets');
+    const secrets = new OpenClawSecrets(this, 'Secrets', {
+      openRouterApiKey: props?.openRouterApiKey,
+    });
 
     // ============================================================
     // VPC - Networking
@@ -104,8 +107,8 @@ export class OpenClawStack extends cdk.Stack {
       });
       fargateSecurityGroup.addIngressRule(
         albSecurityGroup,
-        ec2.Port.tcp(3000),
-        'Allow traffic from ALB to container port 3000'
+        ec2.Port.tcp(18789),
+        'Allow traffic from ALB to container port 18789'
       );
     } else {
       // Create new VPC using the OpenClawVpc construct
@@ -162,11 +165,21 @@ export class OpenClawStack extends cdk.Stack {
     });
 
     // ============================================================
-    // EFS Access Point
+    // EFS Access Point with full permissions for node user
     // ============================================================
     const accessPoint = new efs.AccessPoint(this, 'OpenClawAccessPoint', {
       fileSystem,
       path: '/openclaw',
+      // Run as node user (UID/GID 1000) with full permissions
+      posixUser: {
+        uid: '1000',
+        gid: '1000',
+      },
+      createAcl: {
+        ownerUid: '1000',
+        ownerGid: '1000',
+        permissions: '0777',
+      },
     });
 
     // ============================================================
@@ -176,6 +189,7 @@ export class OpenClawStack extends cdk.Stack {
       bucketArn: storage.bucket.bucketArn,
       gatewayTokenSecretArn: secrets.gatewayTokenSecret.secretArn,
       externalApiSecretArn: secrets.externalApiSecret?.secretArn,
+      openRouterApiSecretArn: secrets.openRouterApiSecret?.secretArn,
       efsFileSystemArn: fileSystem.fileSystemArn,
       bedrockModelId: bedrockModel,
     });
@@ -188,6 +202,7 @@ export class OpenClawStack extends cdk.Stack {
       bucket: storage.bucket,
       gatewayTokenSecret: secrets.gatewayTokenSecret,
       externalApiSecret: secrets.externalApiSecret,
+      openRouterApiSecret: secrets.openRouterApiSecret,
       taskExecutionRole: openClawIam.taskExecutionRole,
       taskRole: openClawIam.taskRole,
       securityGroup: fargateSecurityGroup,
@@ -206,27 +221,27 @@ export class OpenClawStack extends cdk.Stack {
       usePublicSubnets: !useNatGateway,
     });
 
-    // NOTE: EFS mount disabled due to access issues in Fargate
-    // Using ephemeral storage instead (data lost on task stop)
-    // TODO: Re-enable EFS after fixing IAM/security group configuration
-    // 
-    // EFS volume configuration (disabled):
-    // fargate.taskDefinition.addVolume({
-    //   name: 'openclaw-data',
-    //   efsVolumeConfiguration: {
-    //     fileSystemId: fileSystem.fileSystemId,
-    //     transitEncryption: 'ENABLED',
-    //     authorizationConfig: {
-    //       accessPointId: accessPoint.accessPointId,
-    //       iam: 'DISABLED',
-    //     },
-    //   },
-    // });
-    // fargate.container.addMountPoints({
-    //   sourceVolume: 'openclaw-data',
-    //   containerPath: '/app/data',
-    //   readOnly: false,
-    // });
+    // ============================================================
+    // EFS Mount for OpenClaw Config/Persistence
+    // Following official Docker pattern: /home/node/.openclaw
+    // Using access point with IAM auth for proper permissions
+    // ============================================================
+    fargate.taskDefinition.addVolume({
+      name: 'openclaw-data',
+      efsVolumeConfiguration: {
+        fileSystemId: fileSystem.fileSystemId,
+        transitEncryption: 'ENABLED',
+        authorizationConfig: {
+          accessPointId: accessPoint.accessPointId,
+          iam: 'ENABLED',
+        },
+      },
+    });
+    fargate.container.addMountPoints({
+      sourceVolume: 'openclaw-data',
+      containerPath: '/home/node/.openclaw',
+      readOnly: false,
+    });
 
     // ============================================================
     // Application Load Balancer - Using OpenClawAlb Construct
@@ -236,6 +251,15 @@ export class OpenClawStack extends cdk.Stack {
       securityGroup: albSecurityGroup,
       fargateService: fargate.service,
       healthCheckPath: DEFAULT_CONTAINER_CONFIG.healthCheckPath,
+    });
+
+    // ============================================================
+    // CloudFront Distribution - HTTPS with Basic Auth
+    // ============================================================
+    const cloudfrontDist = new OpenClawCloudFront(this, 'OpenClawCloudFront', {
+      loadBalancer: alb.loadBalancer,
+      authUsername: 'admin',
+      authPassword: 'openclaw2025',
     });
 
     // ============================================================

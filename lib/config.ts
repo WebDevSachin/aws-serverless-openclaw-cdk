@@ -12,11 +12,11 @@ import {
 export const DEFAULT_CONTAINER_CONFIG: ContainerConfig = {
   imageName: 'openclaw',
   imageTag: 'latest',
-  containerPort: 3000,
-  healthCheckPath: '/',  // Changed to root for nginx
+  containerPort: 18789,
+  healthCheckPath: '/',
   environment: {
     NODE_ENV: 'production',
-    PORT: '3000',
+    PORT: '18789',
   },
 };
 

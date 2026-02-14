@@ -26,6 +26,9 @@ const stack = new OpenClawStack(app, stackName, {
   
   // Optional: Custom VPC ID
   vpcId: app.node.tryGetContext('vpcId'),
+
+  // OpenRouter API key for various models (pass via --context openRouterApiKey=xxx)
+  openRouterApiKey: app.node.tryGetContext('openRouterApiKey'),
 });
 
 // Add common tags to all resources

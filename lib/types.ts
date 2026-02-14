@@ -23,6 +23,12 @@ export interface OpenClawStackProps extends cdk.StackProps {
   readonly bedrockModel?: string;
 
   /**
+   * OpenRouter API key for accessing various models (Kimi, Claude, GPT, etc.).
+   * If provided, will configure OpenClaw to use OpenRouter as the model provider.
+   */
+  readonly openRouterApiKey?: string;
+
+  /**
    * Whether to use Graviton (ARM64) instances for cost optimization
    * @default true
    */

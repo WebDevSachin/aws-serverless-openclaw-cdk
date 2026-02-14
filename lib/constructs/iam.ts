@@ -22,6 +22,11 @@ export interface OpenClawIamProps {
   readonly externalApiSecretArn?: string;
 
   /**
+   * The ARN of the Secrets Manager secret for OpenRouter API key (optional)
+   */
+  readonly openRouterApiSecretArn?: string;
+
+  /**
    * The ARN of the EFS file system (optional, for EFS access permissions)
    */
   readonly efsFileSystemArn?: string;
@@ -81,6 +86,7 @@ export class OpenClawIam extends Construct {
         resources: [
           props.gatewayTokenSecretArn,
           ...(props.externalApiSecretArn ? [props.externalApiSecretArn] : []),
+          ...(props.openRouterApiSecretArn ? [props.openRouterApiSecretArn] : []),
         ],
       })
     );
@@ -153,6 +159,7 @@ export class OpenClawIam extends Construct {
     );
 
     // Inline policy for EFS access if file system ARN is provided
+    // Include ClientRootAccess for full permissions via access point
     if (props.efsFileSystemArn) {
       this.taskRole.addToPolicy(
         new iam.PolicyStatement({
@@ -160,6 +167,7 @@ export class OpenClawIam extends Construct {
           actions: [
             'elasticfilesystem:ClientMount',
             'elasticfilesystem:ClientWrite',
+            'elasticfilesystem:ClientRootAccess',
           ],
           resources: [props.efsFileSystemArn],
         })

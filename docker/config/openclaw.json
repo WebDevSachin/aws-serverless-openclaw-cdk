@@ -1,77 +1,27 @@
 {
-  "name": "OpenClaw",
-  "version": "1.0.0",
-  "description": "Self-hosted autonomous agent platform",
-  "server": {
-    "port": 3000,
-    "host": "0.0.0.0"
-  },
-  "ai": {
-    "provider": "bedrock",
-    "model": "anthropic.claude-3-5-haiku-20241022-v1:0",
-    "region": "us-east-1",
-    "parameters": {
-      "maxTokens": 4096,
-      "temperature": 0.7,
-      "topP": 0.9
+  "gateway": {
+    "port": 18789,
+    "bind": "lan",
+    "mode": "local",
+    "auth": {
+      "mode": "token"
     },
-    "costOptimization": {
-      "enableCaching": true,
-      "cacheTtl": 3600,
-      "maxConcurrentRequests": 5,
-      "requestTimeout": 60000
-    }
-  },
-  "models": {
-    "primary": {
-      "id": "anthropic.claude-3-5-haiku-20241022-v1:0",
-      "name": "Haiku",
-      "description": "Fastest, most cost-effective model for most tasks",
-      "useFor": ["simple_queries", "quick_responses", "high_throughput"]
-    },
-    "aliases": {
-      "haiku": "anthropic.claude-3-5-haiku-20241022-v1:0",
-      "sonnet": "anthropic.claude-3-5-sonnet-20241022-v2:0",
-      "opus": "anthropic.claude-3-opus-20240229-v1:0",
-      "fast": "anthropic.claude-3-5-haiku-20241022-v1:0",
-      "balanced": "anthropic.claude-3-5-sonnet-20241022-v2:0",
-      "capable": "anthropic.claude-3-opus-20240229-v1:0"
-    }
-  },
-  "rateLimits": {
-    "enabled": true,
-    "requestsPerMinute": 60,
-    "requestsPerHour": 1000,
-    "tokensPerMinute": 100000,
-    "concurrentRequests": 5
-  },
-  "promptCaching": {
-    "enabled": true,
-    "ttl": 3600,
-    "maxEntries": 100
-  },
-  "logging": {
-    "level": "info",
-    "format": "json",
-    "destination": "/workspace/logs"
-  },
-  "storage": {
-    "type": "filesystem",
-    "path": "/workspace",
-    "configPath": "/workspace/config",
-    "memoryPath": "/workspace/memory"
-  },
-  "security": {
-    "enableAuth": false,
-    "cors": {
+    "controlUi": {
       "enabled": true,
-      "origins": ["*"]
-    }
+      "allowedOrigins": ["*"],
+      "allowInsecureAuth": true
+    },
+    "trustedProxies": [
+      "10.0.0.0/8",
+      "172.16.0.0/12",
+      "192.168.0.0/16"
+    ]
   },
-  "features": {
-    "enableStreaming": true,
-    "enableTools": true,
-    "enableMemory": true,
-    "maxHistoryLength": 100
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "openrouter/moonshotai/kimi-k2.5"
+      }
+    }
   }
 }
