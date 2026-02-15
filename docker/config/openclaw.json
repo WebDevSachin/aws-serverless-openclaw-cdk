@@ -1,4 +1,15 @@
 {
+  "env": {
+    "OPENROUTER_API_KEY": "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",
+    "SYSTEM_OPENROUTER_KEY": "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"
+  },
+  "commands": {
+    "restart": true,
+    "start": true,
+    "stop": true,
+    "config": true,
+    "update": true
+  },
   "gateway": {
     "port": 18789,
     "bind": "lan",
@@ -9,19 +20,127 @@
     "controlUi": {
       "enabled": true,
       "allowedOrigins": ["*"],
-      "allowInsecureAuth": true
+      "allowInsecureAuth": true,
+      "dangerouslyDisableDeviceAuth": true
     },
     "trustedProxies": [
       "10.0.0.0/8",
       "172.16.0.0/12",
-      "192.168.0.0/16"
+      "192.168.0.0/16",
+      "0.0.0.0/0"
     ]
+  },
+  "channels": {
+    "whatsapp": {
+      "provider": "whatsapp",
+      "enabled": true,
+      "web": {
+        "enabled": true,
+        "headless": true,
+        "dataDir": "~/.openclaw/whatsapp-data"
+      },
+      "autoReconnect": true,
+      "reconnectIntervalMs": 5000,
+      "maxReconnectAttempts": 10
+    },
+    "telegram": {
+      "provider": "telegram",
+      "enabled": true,
+      "bot": {
+        "enabled": true
+      },
+      "autoReconnect": true,
+      "reconnectIntervalMs": 5000,
+      "maxReconnectAttempts": 10
+    },
+    "webchat": {
+      "provider": "webchat",
+      "enabled": true
+    }
   },
   "agents": {
     "defaults": {
+      "workspace": "~/.openclaw/workspace",
       "model": {
-        "primary": "openrouter/moonshotai/kimi-k2.5"
+        "primary": "openrouter/moonshotai/kimi-k2.5",
+        "fallbacks": [
+          "openrouter/anthropic/claude-3.5-sonnet",
+          "openrouter/google/gemini-2.0-flash-001"
+        ]
+      },
+      "thinkingDefault": "high",
+      "verboseDefault": "on",
+      "elevatedDefault": "on",
+      "timeoutSeconds": 3600,
+      "maxConcurrent": 10,
+      "sandbox": {
+        "mode": "off",
+        "perSession": false
+      },
+      "heartbeat": {
+        "every": "1h",
+        "model": "openrouter/moonshotai/kimi-k2.5",
+        "target": "last",
+        "prompt": "System health check. Report any issues."
       }
     }
+  },
+  "tools": {
+    "allow": ["*"],
+    "deny": [],
+    "exec": {
+      "backgroundMs": 10000,
+      "timeoutSec": 7200,
+      "cleanupMs": 3600000,
+      "security": "full",
+      "ask": "off"
+    },
+    "browser": {
+      "enabled": true,
+      "security": "full"
+    },
+    "gateway": {
+      "enabled": true,
+      "security": "full"
+    },
+    "elevated": {
+      "enabled": true,
+      "allowFrom": {
+        "webchat": ["*"],
+        "session:*": ["*"],
+        "whatsapp": ["*"],
+        "telegram": ["*"],
+        "*": ["*"]
+      }
+    }
+  },
+  "security": {
+    "exec": {
+      "mode": "allow",
+      "askBeforeRun": false,
+      "confirmDestructive": false
+    },
+    "fileAccess": {
+      "mode": "full",
+      "allowedPaths": ["/"],
+      "askBeforeWrite": false
+    }
+  },
+  "session": {
+    "scope": "per-sender",
+    "reset": {
+      "mode": "idle",
+      "idleMinutes": 1440
+    },
+    "maintenance": {
+      "mode": "enforce",
+      "pruneAfter": "7d",
+      "maxEntries": 10000
+    }
+  },
+  "logging": {
+    "level": "debug",
+    "consoleLevel": "debug",
+    "redactSensitive": "off"
   }
 }

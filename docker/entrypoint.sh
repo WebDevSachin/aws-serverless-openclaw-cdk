@@ -7,43 +7,45 @@ DEFAULT_CONFIG="/opt/openclaw/default-config.json"
 
 echo "=== OpenClaw Gateway Startup ==="
 
-# Create all OpenClaw directories with full permissions
+# Create all OpenClaw directories (EFS access point ensures node:node ownership)
 # These are needed for credentials, sessions, agents, etc.
 echo "Creating OpenClaw directories..."
 mkdir -p "$OPENCLAW_DIR" \
     "$OPENCLAW_DIR/credentials" \
     "$OPENCLAW_DIR/workspace" \
     "$OPENCLAW_DIR/agents" \
+    "$OPENCLAW_DIR/agents/main/agent" \
     "$OPENCLAW_DIR/devices" \
     "$OPENCLAW_DIR/sessions" \
     2>/dev/null || true
+echo "Directories ready"
 
-# Set full permissions so nothing is ever blocked
-chmod -R 777 "$OPENCLAW_DIR" 2>/dev/null || true
-chown -R 1000:1000 "$OPENCLAW_DIR" 2>/dev/null || true
-echo "Directories ready with full permissions"
-
-# If no config on EFS, try to seed from the baked-in default
-if [ ! -f "$CONFIG_FILE" ]; then
-    if [ -f "$DEFAULT_CONFIG" ]; then
-        echo "No config found on EFS, seeding from default..."
-        if cp "$DEFAULT_CONFIG" "$CONFIG_FILE" 2>/dev/null; then
-            echo "Config seeded to EFS successfully"
-        else
-            echo "EFS not writable, using baked-in config directly"
-            export OPENCLAW_CONFIG_PATH="$DEFAULT_CONFIG"
-        fi
+# Always update config from baked-in default (ensures latest config is used)
+if [ -f "$DEFAULT_CONFIG" ]; then
+    echo "Updating config from default..."
+    if cp "$DEFAULT_CONFIG" "$CONFIG_FILE" 2>/dev/null; then
+        echo "Config updated on EFS successfully"
     else
-        echo "WARNING: No config found anywhere, gateway will use defaults"
+        echo "WARNING: Could not copy config to EFS"
     fi
 else
-    echo "Config found on EFS at $CONFIG_FILE"
+    echo "WARNING: No default config found"
 fi
 
-# Show which config we're using
-ACTIVE_CONFIG="${OPENCLAW_CONFIG_PATH:-$CONFIG_FILE}"
-echo "Using config: $ACTIVE_CONFIG"
-cat "$ACTIVE_CONFIG" 2>/dev/null | jq '.' 2>/dev/null || cat "$ACTIVE_CONFIG" 2>/dev/null || echo "(no config)"
+# Ensure OPENCLAW_HOME is set so OpenClaw finds config at ~/.openclaw/openclaw.json
+export OPENCLAW_HOME="/home/node"
+
+echo "OPENCLAW_HOME=$OPENCLAW_HOME"
+echo "Config location: $CONFIG_FILE"
+
+# Show config if exists
+if [ -f "$CONFIG_FILE" ]; then
+    echo "--- Config Contents ---"
+    cat "$CONFIG_FILE" 2>/dev/null | jq '.' 2>/dev/null || cat "$CONFIG_FILE" 2>/dev/null
+    echo "--- End Config ---"
+else
+    echo "(no config file - using defaults)"
+fi
 
 echo ""
 echo "=== Starting OpenClaw Gateway ==="

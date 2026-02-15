@@ -24,11 +24,12 @@ RUN chown node:node /opt/openclaw/default-config.json
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Stay as root for maximum permissions in ECS container
-# EFS access point enforces node:node ownership anyway
+# Run as node user - EFS access point ensures proper ownership
+USER node
 
-# Set environment variables for config location (following official docs)
-ENV OPENCLAW_HOME=/home/node/.openclaw
+# Set OPENCLAW_HOME to /home/node so OpenClaw looks for config at /home/node/.openclaw/
+ENV OPENCLAW_HOME=/home/node
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-CMD ["node", "openclaw.mjs", "gateway", "--port", "18789", "--verbose", "--allow-unconfigured"]
+# OpenClaw gateway loads config from OPENCLAW_HOME/.openclaw/openclaw.json automatically
+CMD ["node", "openclaw.mjs", "gateway", "--port", "18789", "--verbose"]

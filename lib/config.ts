@@ -21,12 +21,110 @@ export const DEFAULT_CONTAINER_CONFIG: ContainerConfig = {
 };
 
 /**
+ * Bedrock model options
+ * Updated with latest models from Anthropic, Amazon, and other providers
+ */
+export const BEDROCK_MODELS = {
+  /**
+   * Claude 3.5 Sonnet v2 - Best coding model (S-tier on LM Arena)
+   * Best for: Complex coding, reasoning, agentic tasks, visual processing
+   * Price: $3/M input, $15/M output
+   */
+  CLAUDE_3_5_SONNET: 'anthropic.claude-3-5-sonnet-20241022-v2:0',
+
+  /**
+   * Claude 3.5 Haiku - Fastest, most cost-effective Anthropic model
+   * Best for: Quick responses, simple tasks, high throughput
+   * Price: $0.80/M input, $4/M output
+   */
+  CLAUDE_3_5_HAIKU: 'anthropic.claude-3-5-haiku-20241022-v1:0',
+
+  /**
+   * Claude 3 Opus - Highest capability Anthropic model
+   * Best for: Complex analysis, research, creative writing
+   * Price: $15/M input, $75/M output
+   */
+  CLAUDE_3_OPUS: 'anthropic.claude-3-opus-20240229-v1:0',
+
+  /**
+   * Claude 3 Sonnet - Previous generation (legacy)
+   */
+  CLAUDE_3_SONNET: 'anthropic.claude-3-sonnet-20240229-v1:0',
+
+  /**
+   * Claude 3 Haiku - Previous generation (legacy)
+   */
+  CLAUDE_3_HAIKU: 'anthropic.claude-3-haiku-20240307-v1:0',
+
+  /**
+   * Amazon Nova Pro - Balanced multimodal model
+   * Best for: General tasks, multimodal understanding
+   * Price: $0.80/M input, $3.20/M output
+   */
+  NOVA_PRO: 'amazon.nova-pro-v1:0',
+
+  /**
+   * Amazon Nova Lite - Fast and cost-effective
+   * Best for: Quick responses, simple tasks
+   * Price: $0.06/M input, $0.24/M output
+   */
+  NOVA_LITE: 'amazon.nova-lite-v1:0',
+
+  /**
+   * Amazon Nova Micro - Cheapest Bedrock model
+   * Best for: High throughput, simple tasks
+   * Price: $0.035/M input, $0.14/M output
+   */
+  NOVA_MICRO: 'amazon.nova-micro-v1:0',
+
+  /**
+   * Meta Llama 3.3 70B - Strong open model
+   * Best for: Cost-effective reasoning, open-source preference
+   * Price: ~$0.72/M input, ~$0.72/M output
+   */
+  LLAMA_3_3_70B: 'meta.llama3-3-70b-instruct-v1:0',
+
+  /**
+   * Meta Llama 3.2 90B Vision - Multimodal open model
+   * Best for: Vision tasks, multimodal understanding
+   * Price: ~$0.80/M input, ~$1.60/M output
+   */
+  LLAMA_3_2_90B: 'meta.llama3-2-90b-instruct-v1:0',
+
+  /**
+   * Mistral Large 2 - European SOTA model
+   * Best for: Reasoning, multilingual, coding
+   * Price: ~$2/M input, ~$6/M output
+   */
+  MISTRAL_LARGE_2: 'mistral.mistral-large-2407-v1:0',
+
+  /**
+   * Cohere Command R+ - Enterprise retrieval
+   * Best for: RAG, enterprise applications
+   * Price: ~$3/M input, ~$15/M output
+   */
+  COHERE_COMMAND_R_PLUS: 'cohere.command-r-plus-v1:0',
+} as const;
+
+/**
  * Default Bedrock configuration
- * Uses Claude 3.5 Haiku for cost optimization
- * Updated to use model available in ap-south-1
+ * Uses Claude 3.5 Sonnet for best performance
+ * Falls back to Nova Micro if region doesn't support Claude
  */
 export const DEFAULT_BEDROCK_CONFIG: BedrockConfig = {
-  modelId: 'amazon.nova-micro-v1:0',  // Cheapest model, no use case submission required
+  modelId: BEDROCK_MODELS.CLAUDE_3_5_SONNET,  // Best coding model (S-tier)
+  region: 'us-east-1',  // Claude models available here
+  maxTokens: 4096,
+  temperature: 0.7,
+  topP: 0.9,
+};
+
+/**
+ * Budget Bedrock configuration
+ * Uses Nova Micro for minimal cost
+ */
+export const BUDGET_BEDROCK_CONFIG: BedrockConfig = {
+  modelId: BEDROCK_MODELS.NOVA_MICRO,  // Cheapest at $0.035/M input
   region: 'ap-south-1',
   maxTokens: 4096,
   temperature: 0.7,
@@ -175,48 +273,68 @@ export const RESOURCE_SIZING = {
 } as const;
 
 /**
- * Bedrock model options
+ * Recommended Bedrock models by use case
  */
-export const BEDROCK_MODELS = {
-  /**
-   * Claude 3.5 Haiku - Fastest, most cost-effective
-   * Best for: Quick responses, simple tasks, high throughput
-   */
-  CLAUDE_3_5_HAIKU: 'anthropic.claude-3-5-haiku-20241022-v1:0',
-
-  /**
-   * Claude 3.5 Sonnet - Balanced performance and cost
-   * Best for: Complex reasoning, coding, multi-step tasks
-   */
-  CLAUDE_3_5_SONNET: 'anthropic.claude-3-5-sonnet-20241022-v2:0',
-
-  /**
-   * Claude 3 Opus - Highest capability
-   * Best for: Complex analysis, research, creative writing
-   */
-  CLAUDE_3_OPUS: 'anthropic.claude-3-opus-20240229-v1:0',
-
-  /**
-   * Claude 3 Sonnet - Previous generation
-   */
-  CLAUDE_3_SONNET: 'anthropic.claude-3-sonnet-20240229-v1:0',
-
-  /**
-   * Claude 3 Haiku - Previous generation
-   */
-  CLAUDE_3_HAIKU: 'anthropic.claude-3-haiku-20240307-v1:0',
+export const BEDROCK_RECOMMENDATIONS = {
+  /** Best overall for coding */
+  CODING: BEDROCK_MODELS.CLAUDE_3_5_SONNET,
+  /** Best value (quality/price) */
+  VALUE: BEDROCK_MODELS.NOVA_PRO,
+  /** Cheapest option */
+  BUDGET: BEDROCK_MODELS.NOVA_MICRO,
+  /** Best for complex tasks */
+  COMPLEX: BEDROCK_MODELS.CLAUDE_3_OPUS,
+  /** Best open-source model */
+  OPEN_SOURCE: BEDROCK_MODELS.LLAMA_3_3_70B,
+  /** Best for vision tasks */
+  VISION: BEDROCK_MODELS.LLAMA_3_2_90B,
 } as const;
 
 /**
+ * Bedrock model pricing (per million tokens)
+ */
+export const BEDROCK_PRICING: Record<string, { input: number; output: number }> = {
+  [BEDROCK_MODELS.CLAUDE_3_5_SONNET]: { input: 3.0, output: 15.0 },
+  [BEDROCK_MODELS.CLAUDE_3_5_HAIKU]: { input: 0.80, output: 4.0 },
+  [BEDROCK_MODELS.CLAUDE_3_OPUS]: { input: 15.0, output: 75.0 },
+  [BEDROCK_MODELS.CLAUDE_3_SONNET]: { input: 3.0, output: 15.0 },
+  [BEDROCK_MODELS.CLAUDE_3_HAIKU]: { input: 0.25, output: 1.25 },
+  [BEDROCK_MODELS.NOVA_PRO]: { input: 0.80, output: 3.20 },
+  [BEDROCK_MODELS.NOVA_LITE]: { input: 0.06, output: 0.24 },
+  [BEDROCK_MODELS.NOVA_MICRO]: { input: 0.035, output: 0.14 },
+  [BEDROCK_MODELS.LLAMA_3_3_70B]: { input: 0.72, output: 0.72 },
+  [BEDROCK_MODELS.LLAMA_3_2_90B]: { input: 0.80, output: 1.60 },
+  [BEDROCK_MODELS.MISTRAL_LARGE_2]: { input: 2.0, output: 6.0 },
+  [BEDROCK_MODELS.COHERE_COMMAND_R_PLUS]: { input: 3.0, output: 15.0 },
+};
+
+/**
  * AWS regions where Bedrock is available
+ * Note: Not all models are available in all regions
+ * Claude 3.5 Sonnet: us-east-1, us-west-2, eu-central-1, eu-west-3
+ * Nova models: Available in most regions including ap-south-1
  */
 export const BEDROCK_REGIONS = [
+  'us-east-1',      // Full model support including Claude 3.5
+  'us-west-2',      // Full model support including Claude 3.5
+  'ap-south-1',     // Nova models only (no Claude)
+  'ap-northeast-1', // Nova models only
+  'ap-southeast-1', // Nova models only
+  'ap-southeast-2', // Nova models only
+  'eu-central-1',   // Claude 3.5 available
+  'eu-west-1',      // Nova models only
+  'eu-west-3',      // Claude 3.5 available
+] as const;
+
+/**
+ * Regions supporting Claude 3.5 Sonnet
+ */
+export const CLAUDE_REGIONS = [
   'us-east-1',
   'us-west-2',
-  'ap-northeast-1',
-  'ap-southeast-1',
-  'ap-southeast-2',
   'eu-central-1',
-  'eu-west-1',
   'eu-west-3',
 ] as const;
+
+// Re-export all model definitions
+export * from './models';
