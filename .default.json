@@ -1,0 +1,232 @@
+{
+    "meta": {
+      "lastTouchedVersion": "2026.2.12",
+      "lastTouchedAt": "2026-02-15T19:33:35.212Z"
+    },
+    "env": {
+      "OPENROUTER_API_KEY": "__OPENCLAW_REDACTED__",
+      "SYSTEM_OPENROUTER_KEY": "__OPENCLAW_REDACTED__",
+      "TELEGRAM_BOT_TOKEN": "__OPENCLAW_REDACTED__",
+      "OPENCLAW_GATEWAY_TOKEN": "__OPENCLAW_REDACTED__"
+    },
+    "wizard": {
+      "lastRunAt": "2026-02-15T19:23:19.353Z",
+      "lastRunVersion": "2026.2.12",
+      "lastRunCommand": "doctor",
+      "lastRunMode": "local"
+    },
+    "logging": {
+      "level": "debug",
+      "file": "/home/node/.openclaw/logs/openclaw.log",
+      "consoleLevel": "debug",
+      "consoleStyle": "pretty",
+      "redactSensitive": "off"
+    },
+    "update": {
+      "channel": "stable"
+    },
+    "browser": {
+      "enabled": true
+    },
+    "agents": {
+      "defaults": {
+        "model": {
+          "primary": "openrouter/minimax/minimax-m2",
+          "fallbacks": [
+            "openrouter/anthropic/claude-3.5-sonnet",
+            "openrouter/google/gemini-2.0-flash-001"
+          ]
+        },
+        "imageModel": {
+          "primary": "openrouter/openai/gpt-4o"
+        },
+        "models": {
+          "openrouter/anthropic/claude-opus-4": {
+            "alias": "opus"
+          },
+          "openrouter/openai/gpt-4": {
+            "alias": "gpt4"
+          },
+          "openrouter/google/gemini-2.0-flash-001": {
+            "alias": "gemini"
+          }
+        },
+        "workspace": "/home/node/.openclaw/workspace",
+        "userTimezone": "Asia/Calcutta",
+        "memorySearch": {
+          "provider": "gemini",
+          "model": "gemini-embedding-001"
+        },
+        "thinkingDefault": "high",
+        "verboseDefault": "on",
+        "elevatedDefault": "on",
+        "blockStreamingDefault": "off",
+        "humanDelay": {
+          "mode": "off"
+        },
+        "timeoutSeconds": 3600,
+        "mediaMaxMb": 50,
+        "heartbeat": {
+          "every": "1h",
+          "model": "openrouter/minimax/minimax-m2",
+          "target": "last",
+          "prompt": "System health check. Report any issues."
+        },
+        "maxConcurrent": 10,
+        "subagents": {
+          "maxConcurrent": 8
+        },
+        "sandbox": {
+          "mode": "off",
+          "perSession": false
+        }
+      }
+    },
+    "tools": {
+      "profile": "full",
+      "allow": [
+        "*"
+      ],
+      "deny": [],
+      "elevated": {
+        "enabled": true,
+        "allowFrom": {
+          "webchat": [
+            "*"
+          ],
+          "session:*": [
+            "*"
+          ],
+          "whatsapp": [
+            "*"
+          ],
+          "telegram": [
+            "*"
+          ]
+        }
+      },
+      "exec": {
+        "backgroundMs": 10000,
+        "timeoutSec": 7200,
+        "cleanupMs": 3600000
+      }
+    },
+    "messages": {
+      "messagePrefix": "[OpenClaw]",
+      "responsePrefix": ">",
+      "ackReaction": "👀",
+      "ackReactionScope": "group-mentions"
+    },
+    "commands": {
+      "native": "auto",
+      "nativeSkills": "auto",
+      "text": true,
+      "config": true,
+      "debug": true,
+      "restart": true,
+      "allowFrom": {
+        "*": [
+          "*"
+        ]
+      }
+    },
+    "session": {
+      "scope": "per-sender",
+      "resetTriggers": [
+        "/new",
+        "/reset",
+        "/clear"
+      ],
+      "reset": {
+        "mode": "idle",
+        "idleMinutes": 1440
+      },
+      "typingIntervalSeconds": 5,
+      "maintenance": {
+        "mode": "enforce",
+        "pruneAfter": "7d",
+        "maxEntries": 10000
+      }
+    },
+    "web": {
+      "enabled": true,
+      "heartbeatSeconds": 60,
+      "reconnect": {
+        "initialMs": 2000,
+        "maxMs": 120000,
+        "factor": 1.4,
+        "jitter": 0.2,
+        "maxAttempts": 0
+      }
+    },
+    "channels": {
+      "whatsapp": {
+        "sendReadReceipts": true,
+        "dmPolicy": "pairing",
+        "allowFrom": [
+          "*"
+        ],
+        "groupPolicy": "allowlist",
+        "textChunkLimit": 4000,
+        "mediaMaxMb": 50,
+        "ackReaction": {
+          "emoji": "👀",
+          "direct": false,
+          "group": "mentions"
+        },
+        "debounceMs": 0
+      },
+      "telegram": {
+        "enabled": true,
+        "dmPolicy": "pairing",
+        "botToken": "__OPENCLAW_REDACTED__",
+        "allowFrom": [
+          "*"
+        ],
+        "groupPolicy": "allowlist",
+        "historyLimit": 50,
+        "streamMode": "partial",
+        "mediaMaxMb": 5
+      }
+    },
+    "gateway": {
+      "port": 18789,
+      "mode": "local",
+      "bind": "lan",
+      "controlUi": {
+        "enabled": true,
+        "allowedOrigins": [
+          "https://d15af3nsx4ckro.cloudfront.net",
+          "http://localhost:18789",
+          "*"
+        ],
+        "allowInsecureAuth": true,
+        "dangerouslyDisableDeviceAuth": true
+      },
+      "auth": {
+        "mode": "token",
+        "token": "__OPENCLAW_REDACTED__"
+      },
+      "trustedProxies": [
+        "0.0.0.0/0",
+        "10.0.0.0/8",
+        "172.16.0.0/12",
+        "192.168.0.0/16"
+      ],
+      "reload": {
+        "mode": "hybrid",
+        "debounceMs": 500
+      }
+    },
+    "plugins": {
+      "entries": {
+        "telegram": {
+          "enabled": true
+        },
+        "whatsapp": {
+          "enabled": false
+        }
+      }
+    }
+  }
+  

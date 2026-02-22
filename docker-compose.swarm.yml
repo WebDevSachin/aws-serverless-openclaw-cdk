@@ -1,0 +1,357 @@
+# ==============================================
+# OpenClaw Docker Swarm Configuration
+# Multi-Agent Swarm Mode with Team Organization
+# ==============================================
+version: '3.9'
+
+x-shared-openclaw-config: &shared-openclaw-config
+  image: ghcr.io/openclaw/openclaw:latest
+  networks:
+    - openclaw-cluster
+  volumes:
+    - openclaw-shared-data:/home/node/.openclaw
+  environment:
+    OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+    SYSTEM_OPENROUTER_KEY: ${SYSTEM_OPENROUTER_KEY}
+    GATEWAY_TOKEN: ${GATEWAY_TOKEN:-default-token}
+    BRAVE_SEARCH_API_KEY: ${BRAVE_SEARCH_API_KEY}
+  healthcheck:
+    test: ["CMD", "curl", "-f", "http://localhost:18789/health"]
+    interval: 30s
+    timeout: 10s
+    retries: 3
+    start_period: 60s
+  deploy:
+    restart_policy:
+      condition: any
+      delay: 5s
+      max_attempts: 3
+      window: 120s
+    resources:
+      limits:
+        cpus: '2.0'
+        memory: 4G
+      reservations:
+        cpus: '0.5'
+        memory: 1G
+
+services:
+  # ==============================================
+  # PRIMARY GATEWAY (Master Node)
+  # Single entry point for all connections
+  # ==============================================
+  gateway-primary:
+    <<: *shared-openclaw-config
+    hostname: gateway-primary
+    ports:
+      - "18789:18789"
+    environment:
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      SYSTEM_OPENROUTER_KEY: ${SYSTEM_OPENROUTER_KEY}
+      GATEWAY_TOKEN: ${GATEWAY_TOKEN}
+      GATEWAY_MODE: "swarm"
+      GATEWAY_ROLE: "primary"
+      SWARM_LEADER: "true"
+      BRAVE_SEARCH_API_KEY: ${BRAVE_SEARCH_API_KEY}
+    volumes:
+      - openclaw-shared-data:/home/node/.openclaw
+      - gateway-logs:/home/node/.openclaw/logs
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+        preferences:
+          - spread: node.hostname
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '1.0'
+          memory: 2G
+      restart_policy:
+        condition: any
+        delay: 10s
+        max_attempts: 5
+
+  # ==============================================
+  # AGENT POOL - CORE TEAM
+  # General purpose agents for task execution
+  # ==============================================
+  agent-core-1:
+    <<: *shared-openclaw-config
+    hostname: agent-core-1
+    environment:
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      SYSTEM_OPENROUTER_KEY: ${SYSTEM_OPENROUTER_KEY}
+      AGENT_ID: "agent-core-1"
+      AGENT_TEAM: "core"
+      AGENT_ROLE: "generalist"
+      GATEWAY_PRIMARY: "http://gateway-primary:18789"
+      MAX_CONCURRENT_TASKS: "5"
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        preferences:
+          - spread: node.hostname
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 3G
+    depends_on:
+      - gateway-primary
+
+  agent-core-2:
+    <<: *shared-openclaw-config
+    hostname: agent-core-2
+    environment:
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      SYSTEM_OPENROUTER_KEY: ${SYSTEM_OPENROUTER_KEY}
+      AGENT_ID: "agent-core-2"
+      AGENT_TEAM: "core"
+      AGENT_ROLE: "generalist"
+      GATEWAY_PRIMARY: "http://gateway-primary:18789"
+      MAX_CONCURRENT_TASKS: "5"
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 3G
+    depends_on:
+      - gateway-primary
+
+  agent-core-3:
+    <<: *shared-openclaw-config
+    hostname: agent-core-3
+    environment:
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      SYSTEM_OPENROUTER_KEY: ${SYSTEM_OPENROUTER_KEY}
+      AGENT_ID: "agent-core-3"
+      AGENT_TEAM: "core"
+      AGENT_ROLE: "generalist"
+      GATEWAY_PRIMARY: "http://gateway-primary:18789"
+      MAX_CONCURRENT_TASKS: "5"
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 3G
+    depends_on:
+      - gateway-primary
+
+  # ==============================================
+  # AGENT POOL - CODE TEAM
+  # Specialized for code generation and development
+  # ==============================================
+  agent-code-1:
+    <<: *shared-openclaw-config
+    hostname: agent-code-1
+    environment:
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      SYSTEM_OPENROUTER_KEY: ${SYSTEM_OPENROUTER_KEY}
+      AGENT_ID: "agent-code-1"
+      AGENT_TEAM: "code"
+      AGENT_ROLE: "developer"
+      GATEWAY_PRIMARY: "http://gateway-primary:18789"
+      MAX_CONCURRENT_TASKS: "3"
+      SPECIALIZATION: "code"
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+    depends_on:
+      - gateway-primary
+
+  agent-code-2:
+    <<: *shared-openclaw-config
+    hostname: agent-code-2
+    environment:
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      SYSTEM_OPENROUTER_KEY: ${SYSTEM_OPENROUTER_KEY}
+      AGENT_ID: "agent-code-2"
+      AGENT_TEAM: "code"
+      AGENT_ROLE: "reviewer"
+      GATEWAY_PRIMARY: "http://gateway-primary:18789"
+      MAX_CONCURRENT_TASKS: "3"
+      SPECIALIZATION: "review"
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 3G
+    depends_on:
+      - gateway-primary
+
+  # ==============================================
+  # AGENT POOL - RESEARCH TEAM
+  # Specialized for web research and data analysis
+  # ==============================================
+  agent-research-1:
+    <<: *shared-openclaw-config
+    hostname: agent-research-1
+    environment:
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      SYSTEM_OPENROUTER_KEY: ${SYSTEM_OPENROUTER_KEY}
+      AGENT_ID: "agent-research-1"
+      AGENT_TEAM: "research"
+      AGENT_ROLE: "researcher"
+      GATEWAY_PRIMARY: "http://gateway-primary:18789"
+      MAX_CONCURRENT_TASKS: "4"
+      SPECIALIZATION: "web-research"
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 3G
+    depends_on:
+      - gateway-primary
+
+  agent-research-2:
+    <<: *shared-openclaw-config
+    hostname: agent-research-2
+    environment:
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      SYSTEM_OPENROUTER_KEY: ${SYSTEM_OPENROUTER_KEY}
+      AGENT_ID: "agent-research-2"
+      AGENT_TEAM: "research"
+      AGENT_ROLE: "analyst"
+      GATEWAY_PRIMARY: "http://gateway-primary:18789"
+      MAX_CONCURRENT_TASKS: "4"
+      SPECIALIZATION: "analysis"
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 3G
+    depends_on:
+      - gateway-primary
+
+  # ==============================================
+  # AGENT POOL - DEVOPS TEAM
+  # Specialized for infrastructure and deployment
+  # ==============================================
+  agent-devops-1:
+    <<: *shared-openclaw-config
+    hostname: agent-devops-1
+    environment:
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      SYSTEM_OPENROUTER_KEY: ${SYSTEM_OPENROUTER_KEY}
+      AGENT_ID: "agent-devops-1"
+      AGENT_TEAM: "devops"
+      AGENT_ROLE: "architect"
+      GATEWAY_PRIMARY: "http://gateway-primary:18789"
+      MAX_CONCURRENT_TASKS: "3"
+      SPECIALIZATION: "infrastructure"
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+    depends_on:
+      - gateway-primary
+
+  agent-devops-2:
+    <<: *shared-openclaw-config
+    hostname: agent-devops-2
+    environment:
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      SYSTEM_OPENROUTER_KEY: ${SYSTEM_OPENROUTER_KEY}
+      AGENT_ID: "agent-devops-2"
+      AGENT_TEAM: "devops"
+      AGENT_ROLE: "deployer"
+      GATEWAY_PRIMARY: "http://gateway-primary:18789"
+      MAX_CONCURRENT_TASKS: "3"
+      SPECIALIZATION: "deployment"
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+    depends_on:
+      - gateway-primary
+
+  # ==============================================
+  # LOAD BALANCER / REVERSE PROXY
+  # ==============================================
+  nginx-lb:
+    image: nginx:alpine
+    hostname: nginx-lb
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - nginx-cache:/var/cache/nginx
+    networks:
+      - openclaw-cluster
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+    depends_on:
+      - gateway-primary
+
+  # ==============================================
+  # DATABASE / STATE STORE (Redis)
+  # ==============================================
+  redis:
+    image: redis:7-alpine
+    hostname: redis
+    command: redis-server --appendonly yes --maxmemory 1gb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis-data:/data
+    networks:
+      - openclaw-cluster
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+
+networks:
+  openclaw-cluster:
+    driver: overlay
+    attachable: true
+    driver_opts:
+      encrypted: "true"
+
+volumes:
+  openclaw-shared-data:
+    driver: local
+  gateway-logs:
+    driver: local
+  redis-data:
+    driver: local
+  nginx-cache:
+    driver: local
