@@ -6,3 +6,11 @@ dist/
 test-e2e/test-results/
 test-e2e/playwright-report/
 test-e2e/*.log
+
+# Scripts with hardcoded credentials (security sensitive)
+container-status.sh
+exec-cmd.sh
+exec-container.sh
+fix-whatsapp.sh
+exec-docker-alternative.sh
+docker-exec.sh
