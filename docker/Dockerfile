@@ -24,8 +24,11 @@ RUN chown node:node /opt/openclaw/default-config.json
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Run as node user - EFS access point ensures proper ownership
-USER node
+# ⚠️ SECURITY WARNING: Running as root for maximum permissions
+# This allows sudo, package installation, and full system access
+# Use only in trusted environments!
+# Run as root user for maximum permissions
+USER root
 
 # Set OPENCLAW_HOME to /home/node so OpenClaw looks for config at /home/node/.openclaw/
 ENV OPENCLAW_HOME=/home/node

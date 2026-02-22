@@ -1,12 +1,31 @@
 {
   "name": "openclaw-e2e-tests",
   "version": "1.0.0",
+  "description": "Comprehensive Playwright E2E tests for OpenClaw production deployment",
   "scripts": {
     "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
     "test:headed": "playwright test --headed",
-    "test:debug": "playwright test --debug"
+    "test:gateway": "playwright test tests/01-gateway",
+    "test:websocket": "playwright test tests/02-websocket",
+    "test:agent": "playwright test tests/03-agent",
+    "test:tools": "playwright test tests/04-tools",
+    "test:session": "playwright test tests/05-session",
+    "test:channels": "playwright test tests/06-channels",
+    "test:smoke": "playwright test --grep '@smoke'",
+    "test:critical": "playwright test --grep '@critical'",
+    "report": "playwright show-report",
+    "install:browsers": "playwright install"
   },
   "devDependencies": {
-    "@playwright/test": "^1.41.0"
+    "@playwright/test": "^1.41.0",
+    "@types/node": "^20.11.0",
+    "@types/ws": "^8.5.10",
+    "typescript": "^5.3.3",
+    "ws": "^8.16.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.0"
   }
 }

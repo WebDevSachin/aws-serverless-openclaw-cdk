@@ -1,77 +1,98 @@
 {
   "env": {
     "OPENROUTER_API_KEY": "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",
-    "SYSTEM_OPENROUTER_KEY": "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"
-  },
-  "commands": {
-    "restart": true,
-    "start": true,
-    "stop": true,
-    "config": true,
-    "update": true
+    "SYSTEM_OPENROUTER_KEY": "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",
+    "TELEGRAM_BOT_TOKEN": "",
+    "OPENCLAW_GATEWAY_TOKEN": "GnSPN0qwdgbSOlJapflHjT2xvwOKax32"
   },
   "gateway": {
     "port": 18789,
     "bind": "lan",
     "mode": "local",
     "auth": {
-      "mode": "token"
+      "mode": "token",
+      "token": "GnSPN0qwdgbSOlJapflHjT2xvwOKax32"
+    },
+    "reload": {
+      "mode": "hybrid",
+      "debounceMs": 500
     },
     "controlUi": {
       "enabled": true,
-      "allowedOrigins": ["*"],
+      "allowedOrigins": [
+        "https://d15af3nsx4ckro.cloudfront.net",
+        "http://localhost:18789",
+        "*"
+      ],
       "allowInsecureAuth": true,
       "dangerouslyDisableDeviceAuth": true
     },
     "trustedProxies": [
+      "0.0.0.0/0",
       "10.0.0.0/8",
       "172.16.0.0/12",
-      "192.168.0.0/16",
-      "0.0.0.0/0"
+      "192.168.0.0/16"
     ]
   },
   "channels": {
     "whatsapp": {
-      "provider": "whatsapp",
       "enabled": true,
-      "web": {
-        "enabled": true,
-        "headless": true,
-        "dataDir": "~/.openclaw/whatsapp-data"
-      },
-      "autoReconnect": true,
-      "reconnectIntervalMs": 5000,
-      "maxReconnectAttempts": 10
+      "dmPolicy": "pairing",
+      "allowFrom": ["*"],
+      "groupPolicy": "allowlist",
+      "textChunkLimit": 4000,
+      "mediaMaxMb": 50,
+      "sendReadReceipts": true
     },
     "telegram": {
-      "provider": "telegram",
       "enabled": true,
-      "bot": {
-        "enabled": true
-      },
-      "autoReconnect": true,
-      "reconnectIntervalMs": 5000,
-      "maxReconnectAttempts": 10
-    },
-    "webchat": {
-      "provider": "webchat",
-      "enabled": true
+      "botToken": "",
+      "dmPolicy": "pairing",
+      "allowFrom": ["*"],
+      "groupPolicy": "allowlist",
+      "historyLimit": 50,
+      "mediaMaxMb": 5
+    }
+  },
+  "web": {
+    "enabled": true,
+    "heartbeatSeconds": 60,
+    "reconnect": {
+      "initialMs": 2000,
+      "maxMs": 120000,
+      "factor": 1.4,
+      "jitter": 0.2,
+      "maxAttempts": 0
     }
   },
   "agents": {
     "defaults": {
       "workspace": "~/.openclaw/workspace",
+      "userTimezone": "Asia/Calcutta",
       "model": {
-        "primary": "openrouter/moonshotai/kimi-k2.5",
+        "primary": "openrouter/minimax/minimax-m2",
         "fallbacks": [
           "openrouter/anthropic/claude-3.5-sonnet",
           "openrouter/google/gemini-2.0-flash-001"
         ]
       },
+      "imageModel": {
+        "primary": "openrouter/openai/gpt-4o"
+      },
+      "models": {
+        "openrouter/anthropic/claude-opus-4": { "alias": "opus" },
+        "openrouter/openai/gpt-4": { "alias": "gpt4" },
+        "openrouter/google/gemini-2.0-flash-001": { "alias": "gemini" }
+      },
       "thinkingDefault": "high",
       "verboseDefault": "on",
       "elevatedDefault": "on",
+      "blockStreamingDefault": "off",
+      "humanDelay": {
+        "mode": "off"
+      },
       "timeoutSeconds": 3600,
+      "mediaMaxMb": 50,
       "maxConcurrent": 10,
       "sandbox": {
         "mode": "off",
@@ -79,29 +100,24 @@
       },
       "heartbeat": {
         "every": "1h",
-        "model": "openrouter/moonshotai/kimi-k2.5",
+        "model": "openrouter/minimax/minimax-m2",
         "target": "last",
         "prompt": "System health check. Report any issues."
+      },
+      "memorySearch": {
+        "provider": "gemini",
+        "model": "gemini-embedding-001"
       }
     }
   },
   "tools": {
+    "profile": "full",
     "allow": ["*"],
     "deny": [],
     "exec": {
       "backgroundMs": 10000,
       "timeoutSec": 7200,
-      "cleanupMs": 3600000,
-      "security": "full",
-      "ask": "off"
-    },
-    "browser": {
-      "enabled": true,
-      "security": "full"
-    },
-    "gateway": {
-      "enabled": true,
-      "security": "full"
+      "cleanupMs": 3600000
     },
     "elevated": {
       "enabled": true,
@@ -109,22 +125,12 @@
         "webchat": ["*"],
         "session:*": ["*"],
         "whatsapp": ["*"],
-        "telegram": ["*"],
-        "*": ["*"]
+        "telegram": ["*"]
       }
     }
   },
-  "security": {
-    "exec": {
-      "mode": "allow",
-      "askBeforeRun": false,
-      "confirmDestructive": false
-    },
-    "fileAccess": {
-      "mode": "full",
-      "allowedPaths": ["/"],
-      "askBeforeWrite": false
-    }
+  "browser": {
+    "enabled": true
   },
   "session": {
     "scope": "per-sender",
@@ -132,15 +138,51 @@
       "mode": "idle",
       "idleMinutes": 1440
     },
+    "resetTriggers": ["/new", "/reset", "/clear"],
     "maintenance": {
       "mode": "enforce",
       "pruneAfter": "7d",
       "maxEntries": 10000
-    }
+    },
+    "typingIntervalSeconds": 5
   },
   "logging": {
     "level": "debug",
     "consoleLevel": "debug",
-    "redactSensitive": "off"
+    "consoleStyle": "pretty",
+    "redactSensitive": "off",
+    "file": "/home/node/.openclaw/logs/openclaw.log"
+  },
+  "identity": {
+    "name": "OpenClaw Agent",
+    "theme": "helpful",
+    "emoji": "🤖"
+  },
+  "routing": {
+    "groupChat": {
+      "mentionPatterns": ["@openclaw", "openclaw"],
+      "historyLimit": 50
+    },
+    "queue": {
+      "mode": "collect",
+      "debounceMs": 1000,
+      "cap": 20
+    }
+  },
+  "messages": {
+    "messagePrefix": "[OpenClaw]",
+    "responsePrefix": ">",
+    "ackReaction": "👀",
+    "doneReaction": "✅"
+  },
+  "commands": {
+    "native": "auto",
+    "text": true,
+    "restart": true,
+    "config": true,
+    "debug": true,
+    "allowFrom": {
+      "*": ["*"]
+    }
   }
 }
