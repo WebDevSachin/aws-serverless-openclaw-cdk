@@ -1,54 +1,98 @@
 {
   "meta": {
-    "lastTouchedVersion": "2026.2.12",
-    "lastTouchedAt": "2026-02-15T19:51:04.949Z"
+    "lastTouchedVersion": "2026.2.23",
+    "lastTouchedAt": "2026-02-25T00:00:00.000Z"
   },
   "env": {
-    "OPENROUTER_API_KEY": "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",
-    "SYSTEM_OPENROUTER_KEY": "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",
+    "KIMI_API_KEY": "${KIMI_API_KEY}",
+    "OPENROUTER_API_KEY": "${OPENROUTER_API_KEY}",
+    "SYSTEM_OPENROUTER_KEY": "${OPENROUTER_API_KEY}",
     "TELEGRAM_BOT_TOKEN": "",
-    "OPENCLAW_GATEWAY_TOKEN": "GnSPN0qwdgbSOlJapflHjT2xvwOKax32"
-  },
-  "wizard": {
-    "lastRunAt": "2026-02-15T19:23:19.353Z",
-    "lastRunVersion": "2026.2.12",
-    "lastRunCommand": "doctor",
-    "lastRunMode": "local"
-  },
-  "logging": {
-    "level": "debug",
-    "file": "/home/node/.openclaw/logs/openclaw.log",
-    "consoleLevel": "debug",
-    "consoleStyle": "pretty",
-    "redactSensitive": "off"
+    "OPENCLAW_GATEWAY_TOKEN": "${OPENCLAW_GATEWAY_TOKEN}"
   },
   "update": {
-    "channel": "stable"
+    "auto": {
+      "enabled": true
+    }
   },
   "browser": {
-    "enabled": true
+    "headless": true,
+    "noSandbox": true,
+    "attachOnly": true,
+    "defaultProfile": "openclaw"
+  },
+  "ui": {
+    "assistant": {
+      "name": "OpenClaw"
+    }
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "kimi": {
+        "baseUrl": "https://api.kimi.com/coding",
+        "apiKey": "${KIMI_API_KEY}",
+        "api": "anthropic-messages",
+        "headers": {
+          "anthropic-version": "2023-06-01"
+        },
+        "models": [
+          {
+            "id": "kimi-for-coding",
+            "name": "kimi-for-coding",
+            "reasoning": true,
+            "input": ["text", "image"],
+            "contextWindow": 262144,
+            "maxTokens": 32768
+          }
+        ]
+      },
+      "openrouter": {
+        "baseUrl": "https://openrouter.ai/api/v1",
+        "apiKey": "${OPENROUTER_API_KEY}",
+        "api": "openai",
+        "models": [
+          {
+            "id": "moonshotai/kimi-k2.5",
+            "name": "Kimi K2.5",
+            "contextWindow": 256000
+          },
+          {
+            "id": "anthropic/claude-3.5-sonnet",
+            "name": "Claude 3.5 Sonnet",
+            "contextWindow": 200000
+          },
+          {
+            "id": "google/gemini-2.0-flash-001",
+            "name": "Gemini 2.0 Flash",
+            "contextWindow": 1000000
+          }
+        ]
+      }
+    }
   },
   "agents": {
     "defaults": {
       "model": {
-        "primary": "openrouter/minimax/minimax-m2",
+        "primary": "kimi/kimi-for-coding",
         "fallbacks": [
+          "openrouter/moonshotai/kimi-k2.5",
           "openrouter/anthropic/claude-3.5-sonnet",
           "openrouter/google/gemini-2.0-flash-001"
         ]
       },
-      "imageModel": {
-        "primary": "openrouter/openai/gpt-4o"
-      },
       "models": {
-        "openrouter/anthropic/claude-opus-4": {
-          "alias": "opus"
+        "kimi/kimi-for-coding": {
+          "alias": "Kimi for Coding"
         },
-        "openrouter/openai/gpt-4": {
-          "alias": "gpt4"
+        "openrouter/moonshotai/kimi-k2.5": {
+          "alias": "Kimi K2.5 (OpenRouter)"
+        },
+        "openrouter/anthropic/claude-3.5-sonnet": {
+          "alias": "Claude 3.5 Sonnet"
         },
         "openrouter/google/gemini-2.0-flash-001": {
-          "alias": "gemini"
+          "alias": "Gemini 2.0 Flash"
         }
       },
       "workspace": "/home/node/.openclaw/workspace",
@@ -68,7 +112,7 @@
       "mediaMaxMb": 50,
       "heartbeat": {
         "every": "1h",
-        "model": "openrouter/minimax/minimax-m2",
+        "model": "kimi/kimi-for-coding",
         "target": "last",
         "prompt": "System health check. Report any issues."
       },
@@ -79,30 +123,29 @@
       "sandbox": {
         "mode": "off",
         "perSession": false
+      },
+      "compaction": {
+        "mode": "safeguard"
       }
-    }
+    },
+    "list": [
+      {
+        "id": "main",
+        "name": "main"
+      }
+    ]
   },
   "tools": {
     "profile": "full",
-    "allow": [
-      "*"
-    ],
+    "allow": ["*"],
     "deny": [],
     "elevated": {
       "enabled": true,
       "allowFrom": {
-        "webchat": [
-          "*"
-        ],
-        "session:*": [
-          "*"
-        ],
-        "whatsapp": [
-          "*"
-        ],
-        "telegram": [
-          "*"
-        ]
+        "webchat": ["*"],
+        "session:*": ["*"],
+        "whatsapp": ["*"],
+        "telegram": ["*"]
       }
     },
     "exec": {
@@ -111,32 +154,59 @@
       "cleanupMs": 3600000
     }
   },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "bash": true,
+    "restart": true,
+    "ownerDisplay": "raw",
+    "text": true,
+    "config": true,
+    "debug": true,
+    "allowFrom": {
+      "*": ["*"]
+    }
+  },
+  "hooks": {
+    "token": "${OPENCLAW_GATEWAY_TOKEN}"
+  },
+  "channels": {
+    "whatsapp": {
+      "enabled": true,
+      "configWrites": true,
+      "sendReadReceipts": true,
+      "dmPolicy": "allowlist",
+      "selfChatMode": true,
+      "allowFrom": ["*"],
+      "groupAllowFrom": ["*"],
+      "groupPolicy": "allowlist",
+      "debounceMs": 0,
+      "mediaMaxMb": 50,
+      "ackReaction": {
+        "emoji": "👀",
+        "direct": false,
+        "group": "mentions"
+      }
+    },
+    "telegram": {
+      "enabled": true,
+      "dmPolicy": "pairing",
+      "botToken": "",
+      "groupPolicy": "allowlist",
+      "streamMode": "partial",
+      "mediaMaxMb": 5,
+      "historyLimit": 50
+    }
+  },
   "messages": {
     "messagePrefix": "[OpenClaw]",
     "responsePrefix": ">",
     "ackReaction": "👀",
     "ackReactionScope": "group-mentions"
   },
-  "commands": {
-    "native": "auto",
-    "nativeSkills": "auto",
-    "text": true,
-    "config": true,
-    "debug": true,
-    "restart": true,
-    "allowFrom": {
-      "*": [
-        "*"
-      ]
-    }
-  },
   "session": {
     "scope": "per-sender",
-    "resetTriggers": [
-      "/new",
-      "/reset",
-      "/clear"
-    ],
+    "resetTriggers": ["/new", "/reset", "/clear"],
     "reset": {
       "mode": "idle",
       "idleMinutes": 1440
@@ -159,53 +229,20 @@
       "maxAttempts": 0
     }
   },
-  "channels": {
-    "whatsapp": {
-      "sendReadReceipts": true,
-      "dmPolicy": "pairing",
-      "allowFrom": [
-        "*"
-      ],
-      "groupPolicy": "allowlist",
-      "textChunkLimit": 4000,
-      "mediaMaxMb": 50,
-      "ackReaction": {
-        "emoji": "👀",
-        "direct": false,
-        "group": "mentions"
-      },
-      "debounceMs": 0
-    },
-    "telegram": {
-      "enabled": true,
-      "dmPolicy": "pairing",
-      "botToken": "",
-      "allowFrom": [
-        "*"
-      ],
-      "groupPolicy": "allowlist",
-      "historyLimit": 50,
-      "streamMode": "partial",
-      "mediaMaxMb": 5
-    }
-  },
   "gateway": {
     "port": 18789,
     "mode": "local",
     "bind": "lan",
     "controlUi": {
       "enabled": true,
-      "allowedOrigins": [
-        "https://d15af3nsx4ckro.cloudfront.net",
-        "http://localhost:18789",
-        "*"
-      ],
+      "allowedOrigins": ["*"],
       "allowInsecureAuth": true,
-      "dangerouslyDisableDeviceAuth": true
+      "dangerouslyDisableDeviceAuth": true,
+      "dangerouslyAllowHostHeaderOriginFallback": true
     },
     "auth": {
       "mode": "token",
-      "token": "GnSPN0qwdgbSOlJapflHjT2xvwOKax32"
+      "token": "${OPENCLAW_GATEWAY_TOKEN}"
     },
     "trustedProxies": [
       "0.0.0.0/0",
@@ -216,15 +253,43 @@
     "reload": {
       "mode": "hybrid",
       "debounceMs": 500
+    },
+    "remote": {
+      "token": "${OPENCLAW_GATEWAY_TOKEN}"
     }
+  },
+  "logging": {
+    "level": "debug",
+    "file": "/home/node/.openclaw/logs/openclaw.log",
+    "consoleLevel": "debug",
+    "consoleStyle": "pretty",
+    "redactSensitive": "off"
   },
   "plugins": {
     "entries": {
+      "whatsapp": {
+        "enabled": true
+      },
       "telegram": {
         "enabled": true
       },
-      "whatsapp": {
+      "discord": {
         "enabled": true
+      },
+      "slack": {
+        "enabled": true
+      },
+      "nostr": {
+        "enabled": true
+      },
+      "googlechat": {
+        "enabled": true
+      },
+      "imessage": {
+        "enabled": false
+      },
+      "signal": {
+        "enabled": false
       }
     }
   }

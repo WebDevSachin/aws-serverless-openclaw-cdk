@@ -1,8 +1,10 @@
+# Use official OpenClaw image as base
+# This is the official image from the OpenClaw project
 FROM ghcr.io/openclaw/openclaw:latest
 
 USER root
 
-# Install AWS CLI for S3 operations (following best practice of baking deps into image)
+# Install AWS CLI for S3 operations
 RUN apt-get update && apt-get install -y --no-install-recommends \
     awscli \
     jq \
@@ -11,6 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Create .openclaw directory with full permissions (will be EFS mount point)
+# The official image uses /home/node/.openclaw for data
 RUN mkdir -p /home/node/.openclaw && chmod -R 777 /home/node/.openclaw && chown -R node:node /home/node/.openclaw
 
 # Stage default config OUTSIDE the EFS mount path
@@ -24,10 +27,9 @@ RUN chown node:node /opt/openclaw/default-config.json
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# ⚠️ SECURITY WARNING: Running as root for maximum permissions
-# This allows sudo, package installation, and full system access
-# Use only in trusted environments!
 # Run as root user for maximum permissions
+# Note: The official OpenClaw image runs as 'node' by default
+# We switch to root here for AWS deployment flexibility
 USER root
 
 # Set OPENCLAW_HOME to /home/node so OpenClaw looks for config at /home/node/.openclaw/

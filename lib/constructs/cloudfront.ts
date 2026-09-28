@@ -78,10 +78,13 @@ export class OpenClawCloudFront extends Construct {
       comment: 'Basic authentication for OpenClaw',
     });
 
+    // Get stack name for unique CloudFront resource naming
+    const stackName = cdk.Stack.of(this).stackName;
+    
     // Create a custom origin request policy for WebSocket support
     // This ensures all headers including Upgrade and Connection are forwarded
     const wsOriginRequestPolicy = new cloudfront.OriginRequestPolicy(this, 'WsOriginPolicy', {
-      originRequestPolicyName: 'OpenClawWebSocketPolicy',
+      originRequestPolicyName: `OpenClawWebSocketPolicy-${stackName}`,
       comment: 'Policy for WebSocket support - forwards all headers',
       headerBehavior: cloudfront.OriginRequestHeaderBehavior.all(),
       cookieBehavior: cloudfront.OriginRequestCookieBehavior.all(),

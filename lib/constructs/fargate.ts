@@ -59,6 +59,11 @@ export interface OpenClawFargateProps {
   readonly openRouterApiSecret?: secretsmanager.ISecret;
 
   /**
+   * Optional Kimi API secret for direct Kimi API access
+   */
+  readonly kimiApiSecret?: secretsmanager.ISecret;
+
+  /**
    * CPU units for the task (256, 512, 1024, etc.)
    * @default 512
    */
@@ -216,9 +221,10 @@ export class OpenClawFargate extends Construct {
     // ECS Cluster
     // ============================================================
     const isNewCluster = !props.cluster;
+    const stackName = cdk.Stack.of(this).stackName.toLowerCase().replace(/[^a-z0-9-]/g, '-');
     this.cluster = props.cluster ?? new ecs.Cluster(this, 'Cluster', {
       vpc: props.vpc,
-      clusterName: 'openclaw-cluster',
+      clusterName: `openclaw-cluster-${stackName}`,
       containerInsightsV2: ecs.ContainerInsights.ENABLED,
     });
 
@@ -285,6 +291,14 @@ export class OpenClawFargate extends Construct {
     if (props.openRouterApiSecret) {
       secrets.OPENROUTER_API_KEY = ecs.Secret.fromSecretsManager(
         props.openRouterApiSecret,
+        'apiKey'
+      );
+    }
+
+    // Add Kimi API key if provided (primary model provider)
+    if (props.kimiApiSecret) {
+      secrets.KIMI_API_KEY = ecs.Secret.fromSecretsManager(
+        props.kimiApiSecret,
         'apiKey'
       );
     }

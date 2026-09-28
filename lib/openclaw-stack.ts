@@ -69,6 +69,7 @@ export class OpenClawStack extends cdk.Stack {
     // ============================================================
     const secrets = new OpenClawSecrets(this, 'Secrets', {
       openRouterApiKey: props?.openRouterApiKey,
+      kimiApiKey: props?.kimiApiKey,
     });
 
     // ============================================================
@@ -152,8 +153,9 @@ export class OpenClawStack extends cdk.Stack {
     // ============================================================
     // ECR Repository
     // ============================================================
+    const stackNameShort = this.stackName.toLowerCase().replace(/[^a-z0-9-]/g, '-');
     const repository = new ecr.Repository(this, 'OpenClawRepository', {
-      repositoryName: DEFAULT_CONTAINER_CONFIG.imageName,
+      repositoryName: `openclaw-${stackNameShort}`,
       imageScanOnPush: true,
       removalPolicy: cdk.RemovalPolicy.RETAIN,
       lifecycleRules: [
@@ -190,6 +192,7 @@ export class OpenClawStack extends cdk.Stack {
       gatewayTokenSecretArn: secrets.gatewayTokenSecret.secretArn,
       externalApiSecretArn: secrets.externalApiSecret?.secretArn,
       openRouterApiSecretArn: secrets.openRouterApiSecret?.secretArn,
+      kimiApiSecretArn: secrets.kimiApiSecret?.secretArn,
       efsFileSystemArn: fileSystem.fileSystemArn,
       bedrockModelId: bedrockModel,
     });
@@ -203,6 +206,7 @@ export class OpenClawStack extends cdk.Stack {
       gatewayTokenSecret: secrets.gatewayTokenSecret,
       externalApiSecret: secrets.externalApiSecret,
       openRouterApiSecret: secrets.openRouterApiSecret,
+      kimiApiSecret: secrets.kimiApiSecret,
       taskExecutionRole: openClawIam.taskExecutionRole,
       taskRole: openClawIam.taskRole,
       securityGroup: fargateSecurityGroup,
@@ -302,43 +306,43 @@ export class OpenClawStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'AlbUrl', {
       value: alb.albUrl,
       description: 'OpenClaw Application URL',
-      exportName: 'OpenClawAlbUrl'
+      exportName: `${this.stackName}-AlbUrl`
     });
 
     new cdk.CfnOutput(this, 'AlbDnsName', {
       value: alb.albDnsName,
       description: 'ALB DNS Name',
-      exportName: 'OpenClawAlbDnsName'
+      exportName: `${this.stackName}-AlbDnsName`
     });
 
     new cdk.CfnOutput(this, 'S3BucketName', {
       value: storage.bucket.bucketName,
       description: 'S3 Bucket for OpenClaw storage',
-      exportName: 'OpenClawS3Bucket'
+      exportName: `${this.stackName}-S3Bucket`
     });
 
     new cdk.CfnOutput(this, 'GatewayTokenSecretArn', {
       value: secrets.gatewayTokenSecret.secretArn,
       description: 'Gateway Token Secret ARN',
-      exportName: 'OpenClawGatewayTokenSecret'
+      exportName: `${this.stackName}-GatewayTokenSecret`
     });
 
     new cdk.CfnOutput(this, 'EcsClusterName', {
       value: fargate.cluster.clusterName,
       description: 'ECS Cluster Name',
-      exportName: 'OpenClawClusterName'
+      exportName: `${this.stackName}-ClusterName`
     });
 
     new cdk.CfnOutput(this, 'EcsServiceName', {
       value: fargate.service.serviceName,
       description: 'ECS Service Name',
-      exportName: 'OpenClawServiceName'
+      exportName: `${this.stackName}-ServiceName`
     });
 
     new cdk.CfnOutput(this, 'CloudWatchLogGroup', {
       value: logging.logGroup.logGroupName,
       description: 'CloudWatch Log Group',
-      exportName: 'OpenClawLogGroup'
+      exportName: `${this.stackName}-LogGroup`
     });
 
     // ============================================================

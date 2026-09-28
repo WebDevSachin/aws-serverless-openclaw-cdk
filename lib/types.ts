@@ -29,6 +29,13 @@ export interface OpenClawStackProps extends cdk.StackProps {
   readonly openRouterApiKey?: string;
 
   /**
+   * Kimi API key for accessing Kimi for Coding model directly.
+   * If provided, will configure OpenClaw to use Kimi as the primary model provider.
+   * Format: sk-kimi-...
+   */
+  readonly kimiApiKey?: string;
+
+  /**
    * Whether to use Graviton (ARM64) instances for cost optimization
    * @default true
    */

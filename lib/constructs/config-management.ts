@@ -107,16 +107,17 @@ export class ConfigManagement extends Construct {
     // ============================================================
     // Stack Outputs with Documentation
     // ============================================================
+    const stackName = cdk.Stack.of(this).stackName;
     new cdk.CfnOutput(this, 'ConfigBucketName', {
       value: props.bucket.bucketName,
       description: 'S3 Bucket containing OpenClaw configuration',
-      exportName: 'OpenClawConfigBucket',
+      exportName: `${stackName}-ConfigBucket`,
     });
 
     new cdk.CfnOutput(this, 'ConfigKeyPrefix', {
       value: configKeyPrefix,
       description: 'S3 key prefix for configuration files',
-      exportName: 'OpenClawConfigPrefix',
+      exportName: `${stackName}-ConfigPrefix`,
     });
 
     // ============================================================

@@ -27,6 +27,11 @@ export interface OpenClawIamProps {
   readonly openRouterApiSecretArn?: string;
 
   /**
+   * The ARN of the Secrets Manager secret for Kimi API key (optional)
+   */
+  readonly kimiApiSecretArn?: string;
+
+  /**
    * The ARN of the EFS file system (optional, for EFS access permissions)
    */
   readonly efsFileSystemArn?: string;
@@ -87,6 +92,7 @@ export class OpenClawIam extends Construct {
           props.gatewayTokenSecretArn,
           ...(props.externalApiSecretArn ? [props.externalApiSecretArn] : []),
           ...(props.openRouterApiSecretArn ? [props.openRouterApiSecretArn] : []),
+          ...(props.kimiApiSecretArn ? [props.kimiApiSecretArn] : []),
         ],
       })
     );

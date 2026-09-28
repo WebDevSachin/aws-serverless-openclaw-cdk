@@ -14,3 +14,28 @@ exec-container.sh
 fix-whatsapp.sh
 exec-docker-alternative.sh
 docker-exec.sh
+
+# Kimi-related helper files
+*.kimi.*
+*-kimi.*
+kimi-*
+
+# Claude team startup scripts
+claude-*.sh
+
+# Temporary analysis documents
+DOCKER_IMAGE_ANALYSIS.md
+KIMI_*.md
+
+# Local environment files
+.default.json
+.env.local
+.env.*.local
+
+# Deployment helper scripts
+deploy-*.sh
+run-*.sh
+cdk-outputs-*.json
+# Local env backups (contain live credentials) and shell theme checkout
+.env.backup.*
+powerlevel10k/

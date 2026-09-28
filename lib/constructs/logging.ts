@@ -97,10 +97,13 @@ export class OpenClawLogging extends Construct {
       const accountId = cdk.Stack.of(this).account;
       const region = cdk.Stack.of(this).region;
 
+      // Get stack name for unique bucket naming (shortened)
+      const stackName = cdk.Stack.of(this).stackName.toLowerCase().replace(/[^a-z0-9]/g, '').slice(-8);
+      
       // Create S3 bucket for ALB access logs
       // Note: ALB access logs require specific bucket naming and permissions
       this.albLogBucket = new s3.Bucket(this, 'AlbLogBucket', {
-        bucketName: `openclaw-alb-logs-${accountId}-${region}`,
+        bucketName: `oc-alb-${accountId}-${region}-${stackName}`,
         lifecycleRules: [
           {
             id: 'TransitionToGlacierAfter30Days',

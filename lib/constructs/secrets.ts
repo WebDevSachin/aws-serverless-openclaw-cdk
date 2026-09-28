@@ -17,6 +17,13 @@ export interface OpenClawSecretsProps {
    * If provided, will create a secret with this value
    */
   openRouterApiKey?: string;
+
+  /**
+   * Kimi API key for accessing Kimi for Coding model directly
+   * If provided, will create a secret with this value
+   * Format: sk-kimi-...
+   */
+  kimiApiKey?: string;
 }
 
 /**
@@ -30,6 +37,7 @@ export class OpenClawSecrets extends Construct {
   public readonly gatewayTokenSecret: secretsmanager.ISecret;
   public readonly externalApiSecret?: secretsmanager.ISecret;
   public readonly openRouterApiSecret?: secretsmanager.ISecret;
+  public readonly kimiApiSecret?: secretsmanager.ISecret;
 
   constructor(scope: Construct, id: string, props?: OpenClawSecretsProps) {
     super(scope, id);
@@ -68,6 +76,17 @@ export class OpenClawSecrets extends Construct {
         secretName: `openclaw/openrouter-api-key-${stackName}`,
         secretStringValue: cdk.SecretValue.unsafePlainText(
           JSON.stringify({ apiKey: props.openRouterApiKey })
+        ),
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+    }
+
+    // Kimi API key for direct Kimi API access (primary model provider)
+    if (props?.kimiApiKey) {
+      this.kimiApiSecret = new secretsmanager.Secret(this, 'KimiApiSecret', {
+        secretName: `openclaw/kimi-api-key-${stackName}`,
+        secretStringValue: cdk.SecretValue.unsafePlainText(
+          JSON.stringify({ apiKey: props.kimiApiKey })
         ),
         removalPolicy: cdk.RemovalPolicy.DESTROY,
       });

@@ -20,12 +20,14 @@ export class OpenClawStorage extends Construct {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    // Get account ID for unique bucket naming
+    // Get account ID and stack name for unique bucket naming
     const accountId = cdk.Stack.of(this).account;
+    const stackName = cdk.Stack.of(this).stackName.toLowerCase().replace(/[^a-z0-9]/g, '').slice(-8);
 
     // Create the S3 bucket with all required configurations
     this.bucket = new s3.Bucket(this, 'Bucket', {
-      bucketName: `openclaw-storage-${accountId}`,
+      bucketName: `oc-data-${accountId}-${stackName}`,
+      objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
       versioned: true,
       encryption: s3.BucketEncryption.S3_MANAGED,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
